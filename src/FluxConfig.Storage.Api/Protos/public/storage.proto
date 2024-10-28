@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option csharp_namespace = "FluxConfig.Storage.Api.GrpcContracts.Public";
+
+package storage.public.v1;
+
+service Storage {
+  rpc LoadVaultConfig (LoadConfigRequest) returns (LoadConfigResponse);
+
+  rpc LoadRealTimeConfig (LoadConfigRequest) returns (LoadConfigResponse);
+}
+
+message LoadConfigRequest {
+  string configuration_env = 1;
+}
+
+message LoadConfigResponse {
+  map<string, string> configuration_data = 1;
+}
