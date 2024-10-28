@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+import "google/protobuf/struct.proto";
+
+option csharp_namespace = "FluxConfig.Storage.Api.GrpcContracts.Internal";
+
+package storage.internal.v1;
+
+service Storage {
+  rpc LoadVaultConfig (LoadConfigRequest) returns (LoadConfigResponse);
+
+  rpc LoadRealTimeConfig (LoadConfigRequest) returns (LoadConfigResponse);
+  
+  rpc UpdateVaultConfig (UpdateConfigRequest) returns (UpdateConfigResponse);
+  
+  rpc UpdateRTConfig (UpdateConfigRequest) returns (UpdateConfigResponse);
+  
+  rpc CreateServiceConfiguration (CreateServiceConfigRequest) returns (CreateServiceConfigResponse);
+  
+  rpc DeleteServiceConfiguration (DeleteServiceConfigRequest) returns (DeleteServiceConfigResponse);
+}
+
+message LoadConfigRequest {
+  string service_api_key = 1;
+  string configuration_tag = 2;
+}
+
+message LoadConfigResponse {
+  google.protobuf.Value configuration_data = 1;
+}
+
+
+message UpdateConfigRequest {
+  string service_api_key = 1;
+  string configuration_tag = 2;
+  google.protobuf.Value configuration_data = 3;
+}
+
+message UpdateConfigResponse {
+  
+}
+
+message CreateServiceConfigRequest {
+  string service_api_key = 1;
+  string configuration_tag = 2;
+}
+
+message CreateServiceConfigResponse {
+  
+}
+
+message DeleteServiceConfigRequest {
+  string service_api_key = 1;
+  string configuration_tag = 2;
+}
+
+message DeleteServiceConfigResponse {
+}

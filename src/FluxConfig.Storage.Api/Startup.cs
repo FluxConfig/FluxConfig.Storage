@@ -15,7 +15,7 @@ public sealed class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddGrpc();
+        services.AddGrpcWithInterceptors(_environment);
     }
 
     public void Configure(IApplicationBuilder app)
