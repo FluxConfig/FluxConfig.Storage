@@ -16,4 +16,9 @@
         <PackageReference Include="Grpc.StatusProto" Version="2.66.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\FluxConfig.Storage.Domain\FluxConfig.Storage.Domain.csproj" />
+      <ProjectReference Include="..\FluxConfig.Storage.Infrastructure\FluxConfig.Storage.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>
