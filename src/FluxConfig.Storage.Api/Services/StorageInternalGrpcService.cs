@@ -1,13 +1,13 @@
-using Grpc.Core;
 using FluxConfig.Storage.Api.GrpcContracts.Internal;
+using Grpc.Core;
 
-namespace FluxConfig.Storage.Api.Services.Internal;
+namespace FluxConfig.Storage.Api.Services;
 
-public class StorageInternalService : GrpcContracts.Internal.Storage.StorageBase
+public class StorageInternalGrpcService : GrpcContracts.Internal.Storage.StorageBase
 {
-    private readonly ILogger<StorageInternalService> _logger;
+    private readonly ILogger<StorageInternalGrpcService> _logger;
 
-    public StorageInternalService(ILogger<StorageInternalService> logger)
+    public StorageInternalGrpcService(ILogger<StorageInternalGrpcService> logger)
     {
         _logger = logger;
     }

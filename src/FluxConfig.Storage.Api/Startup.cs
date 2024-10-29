@@ -1,4 +1,5 @@
 using FluxConfig.Storage.Api.Extensions;
+using FluxConfig.Storage.Domain.DependencyInjection.Extensions;
 
 namespace FluxConfig.Storage.Api;
 
@@ -15,7 +16,9 @@ public sealed class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddGrpcWithInterceptors(_environment);
+        services
+            .AddGrpcWithInterceptors(_environment)
+            .AddDomainServices();
     }
 
     public void Configure(IApplicationBuilder app)
