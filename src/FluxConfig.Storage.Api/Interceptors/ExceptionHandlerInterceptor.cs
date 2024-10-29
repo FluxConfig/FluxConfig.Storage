@@ -1,3 +1,7 @@
+using System.Text;
+using FluentValidation;
+using FluentValidation.Results;
+using FluxConfig.Storage.Domain.Exceptions.Domain;
 using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using Google.Rpc;
@@ -27,20 +31,77 @@ public class ExceptionHandlerInterceptor : Interceptor
     private static RpcException MapExceptionToRpcException(Exception ex, ServerCallContext context)
     {
         Status status = ex switch
-        {
+        {   
+            DomainValidationException exception => GenerateBadRequestException(exception),
+            
             NotImplementedException => GenerateNotImplementedException(
-                exception: ex,
                 callContext: context),
 
             _ => GenerateInternalException(
-                exception: ex,
                 callContext: context)
         };
 
         return status.ToRpcException();
     }
 
-    private static Status GenerateNotImplementedException(Exception exception, ServerCallContext callContext)
+    private static Status GenerateBadRequestException(DomainValidationException exception)
+    {
+        return new Status
+        {
+            Code = (int)Code.InvalidArgument,
+            Message = "Bad request.\n" + QueryExceptionMessages(exception),
+            Details =
+            {
+                Any.Pack(new BadRequest
+                {
+                    FieldViolations =
+                    {
+                        QueryUnvalidatedFields((ValidationException?)exception.InnerException)
+                    }
+                })
+            }
+        };
+    }
+
+    private static string QueryExceptionMessages(Exception exception)
+    {
+        StringBuilder messages = new StringBuilder();
+        messages.Append(exception.Message);
+
+        Exception? innerException = exception.InnerException;
+        while (innerException != null)
+        {
+            messages.Append($"\n{innerException.Message}");
+            innerException = innerException.InnerException;
+        }
+
+        return messages.ToString();
+    }
+
+    private static RepeatedField<BadRequest.Types.FieldViolation> QueryUnvalidatedFields(
+        ValidationException? exception)
+    {
+        RepeatedField<BadRequest.Types.FieldViolation> validations =
+            new RepeatedField<BadRequest.Types.FieldViolation>();
+        
+        if (exception == null)
+        {
+            return validations;
+        }
+
+        foreach (ValidationFailure failure in exception.Errors)
+        {
+            validations.Add(new BadRequest.Types.FieldViolation
+            {
+                Field = failure.PropertyName,
+                Description = failure.ErrorMessage
+            });
+        }
+
+        return validations;
+    }
+
+    private static Status GenerateNotImplementedException(ServerCallContext callContext)
     {
         return new Status
         {
@@ -65,7 +126,7 @@ public class ExceptionHandlerInterceptor : Interceptor
         };
     }
 
-    private static Status GenerateInternalException(Exception exception, ServerCallContext callContext)
+    private static Status GenerateInternalException(ServerCallContext callContext)
     {
         return new Status
         {
