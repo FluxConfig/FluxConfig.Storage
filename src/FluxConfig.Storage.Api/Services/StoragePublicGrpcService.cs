@@ -15,9 +15,9 @@ public class StoragePublicGrpcService : GrpcContracts.Public.Storage.StorageBase
     }
 
     public override async Task<LoadConfigResponse> LoadVaultConfig(LoadConfigRequest request, ServerCallContext context)
-    {   
+    {
         var loadVaultConfigModel = request.MapRequestToModel(
-            serviceApiKey: context.RequestHeaders.GetValue("X-API-KEY") ?? ""
+            callContext: context
             );
 
         var configDataModel = await _storagePublicService.GetVaultConfigurationData(
@@ -31,7 +31,7 @@ public class StoragePublicGrpcService : GrpcContracts.Public.Storage.StorageBase
         ServerCallContext context)
     {
         var loadRealTimeConfigModel = request.MapRequestToModel(
-            serviceApiKey: context.RequestHeaders.GetValue("X-API-KEY") ?? ""
+            callContext: context
             );
 
         var configDataModel = await _storagePublicService.GetRealTimeConfigurationData(
