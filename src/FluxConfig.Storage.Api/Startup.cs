@@ -1,5 +1,7 @@
 using FluxConfig.Storage.Api.Extensions;
+using FluxConfig.Storage.Infrastructure.Configuration.Extensions;
 using FluxConfig.Storage.Domain.DependencyInjection.Extensions;
+using FluxConfig.Storage.Infrastructure.DependencyInjection.Extensions;
 
 namespace FluxConfig.Storage.Api;
 
@@ -18,6 +20,9 @@ public sealed class Startup
     {
         services
             .AddGrpcWithInterceptors(_environment)
+            .AddInfrastructureConfigurationOptions(_configuration)
+            .AddDalInfrastructure(_configuration)
+            .AddDalRepositories()
             .AddDomainServices();
     }
 
