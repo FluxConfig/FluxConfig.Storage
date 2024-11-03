@@ -9,17 +9,19 @@ namespace FluxConfig.Storage.Infrastructure.DependencyInjection.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddDalInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddDalInfrastructure(this IServiceCollection services,
+        IConfiguration configuration)
     {
-        var mongoOptionsSection = configuration.GetSection($"DalOptions:{nameof(MongoDbOptions)}");
-        MongoDbOptions mongoOptions = mongoOptionsSection.Get<MongoDbOptions>() ?? throw new ArgumentException("MongoDBOptions is missing");
-        
-        Mongo.AddMongoDbClient(
+        var mongoConnectionOptionsSection = configuration.GetSection($"DalOptions:{nameof(MongoDbConnectionOptions)}");
+        MongoDbConnectionOptions mongoOptions = mongoConnectionOptionsSection.Get<MongoDbConnectionOptions>() ??
+                                                throw new ArgumentException("MongoDBConnectionOptions is missing");
+
+        Mongo.AddClient(
             services: services,
             mongoOptions: mongoOptions);
-        
+
         Mongo.AddMigrations(services);
-        
+
         return services;
     }
 

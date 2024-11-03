@@ -1,7 +1,5 @@
-using FluxConfig.Storage.Domain.Contracts.Dal.Entities;
 using FluxConfig.Storage.Infrastructure.Configuration.Models;
 using FluxConfig.Storage.Infrastructure.Dal.Repositories.Interfaces;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace FluxConfig.Storage.Infrastructure.Dal.Repositories;
@@ -9,17 +7,17 @@ namespace FluxConfig.Storage.Infrastructure.Dal.Repositories;
 public abstract class BaseRepository : IDbRepository
 {
     private readonly IMongoClient _mongoClient;
-    private readonly MongoDbOptions _mongoOptions;
+    private readonly MongoDbCollectionOptions _mongoCollectionOptions;
 
-    protected BaseRepository(IOptions<MongoDbOptions> mongoOptions, IMongoClient mongoClient)
+    protected BaseRepository(MongoDbCollectionOptions collectionOptions, IMongoClient mongoClient)
     {
-        _mongoOptions = mongoOptions.Value;
+        _mongoCollectionOptions = collectionOptions;
         _mongoClient = mongoClient;
     }
 
     protected IMongoDatabase GetConfigurationDatabase()
     {
-        return _mongoClient.GetDatabase(_mongoOptions.DatabaseName);
+        return _mongoClient.GetDatabase(_mongoCollectionOptions.DatabaseName);
     }
     
     public async Task<IClientSession> CreateSessionAsync(CancellationToken cancellationToken)

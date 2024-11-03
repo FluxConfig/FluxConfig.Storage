@@ -47,7 +47,7 @@ public class StoragePublicService : IStoragePublicService
 
         ConfigurationDataEntity entity = await _vaultRepository.LoadConfiguration(
             serviceApiKey: loadConfigModel.ServiceApiKey,
-            configurationTag: loadConfigModel.ServiceApiKey,
+            configurationTag: loadConfigModel.ConfigurationTag,
             cancellationToken: cancellationToken
         );
 

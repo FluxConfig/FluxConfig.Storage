@@ -8,8 +8,8 @@ namespace FluxConfig.Storage.Infrastructure.Dal.Repositories;
 
 public class RealTimeConfigurationRepository : BaseRepository, IRealTimeConfigurationRepository
 {
-    public RealTimeConfigurationRepository(IOptions<MongoDbOptions> options, IMongoClient mongoClient) :
-        base(mongoOptions: options,
+    public RealTimeConfigurationRepository(IOptionsSnapshot<MongoDbCollectionOptions> options, IMongoClient mongoClient) :
+        base(collectionOptions: options.Get(MongoDbCollectionOptions.RealTimeTag),
             mongoClient: mongoClient)
     {
     }
