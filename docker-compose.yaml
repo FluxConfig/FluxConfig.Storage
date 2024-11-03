@@ -1,0 +1,27 @@
+version: "3.7"
+
+services:
+  database:
+      image: mongo:latest
+      container_name: mongo-db
+      restart: always
+      volumes:
+        - mongo-data:/data/db
+      env_file:
+        - .env
+      secrets:
+        - db_password
+      environment:
+        MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/db_password
+        MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      ports:
+        - ${MONGO_PORT}:27017
+        
+volumes:
+  mongo-data:
+    driver: local
+          
+secrets:
+  db_password:
+    file: secrets/MongoDB/password.txt
+  
