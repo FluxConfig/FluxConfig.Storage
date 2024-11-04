@@ -16,11 +16,9 @@ public static class ServiceCollectionExtensions
         MongoDbConnectionOptions mongoOptions = mongoConnectionOptionsSection.Get<MongoDbConnectionOptions>() ??
                                                 throw new ArgumentException("MongoDBConnectionOptions is missing");
 
-        Mongo.AddClient(
+        MongoDb.AddClient(
             services: services,
             mongoOptions: mongoOptions);
-
-        Mongo.AddMigrations(services);
 
         return services;
     }

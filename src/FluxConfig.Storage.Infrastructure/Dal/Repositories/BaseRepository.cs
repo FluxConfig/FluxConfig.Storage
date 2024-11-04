@@ -1,3 +1,4 @@
+using FluxConfig.Storage.Domain.Contracts.Dal.Entities;
 using FluxConfig.Storage.Infrastructure.Configuration.Models;
 using FluxConfig.Storage.Infrastructure.Dal.Repositories.Interfaces;
 using MongoDB.Driver;
@@ -19,7 +20,13 @@ public abstract class BaseRepository : IDbRepository
     {
         return _mongoClient.GetDatabase(_mongoCollectionOptions.DatabaseName);
     }
-    
+
+    protected IMongoCollection<ConfigurationDataEntity> GetConfigurationCollection()
+    {
+        return GetConfigurationDatabase()
+            .GetCollection<ConfigurationDataEntity>(_mongoCollectionOptions.CollectionName);
+    }
+
     public async Task<IClientSession> CreateSessionAsync(CancellationToken cancellationToken)
     {
         return await _mongoClient.StartSessionAsync(

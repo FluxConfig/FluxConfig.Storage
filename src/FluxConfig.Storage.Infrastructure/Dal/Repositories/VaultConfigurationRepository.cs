@@ -8,8 +8,11 @@ namespace FluxConfig.Storage.Infrastructure.Dal.Repositories;
 
 public class VaultConfigurationRepository : BaseRepository, IVaultConfigurationRepository
 {
-    public VaultConfigurationRepository(IOptionsSnapshot<MongoDbCollectionOptions> options, IMongoClient mongoClient) :
-        base(collectionOptions: options.Get(MongoDbCollectionOptions.VaultTag),
+    public VaultConfigurationRepository(
+        IOptionsSnapshot<MongoDbCollectionOptions> options,
+        IMongoClient mongoClient) :
+        base(
+            collectionOptions: options.Get(MongoDbCollectionOptions.VaultTag),
             mongoClient: mongoClient)
     {
     }

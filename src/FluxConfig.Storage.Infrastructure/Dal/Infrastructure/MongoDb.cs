@@ -4,18 +4,13 @@ using MongoDB.Driver;
 
 namespace FluxConfig.Storage.Infrastructure.Dal.Infrastructure;
 
-public static class Mongo
+public static class MongoDb
 {
     public static void AddClient(IServiceCollection services, MongoDbConnectionOptions mongoOptions)
     {
         services.AddSingleton<IMongoClient>(new MongoClient(mongoOptions.GenerateMongoClientSettings()));
     }
-
-    //TODO: Add migration runner
-    public static void AddMigrations(IServiceCollection services)
-    {
-    }
-
+    
     private static MongoClientSettings GenerateMongoClientSettings(this MongoDbConnectionOptions connectionOptions)
     {
         var settings = MongoClientSettings.FromConnectionString(connectionOptions.ConnectionString);
