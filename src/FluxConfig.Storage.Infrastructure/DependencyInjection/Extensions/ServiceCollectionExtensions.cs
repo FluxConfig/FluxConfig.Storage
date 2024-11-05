@@ -15,7 +15,9 @@ public static class ServiceCollectionExtensions
         var mongoConnectionOptionsSection = configuration.GetSection($"DalOptions:{nameof(MongoDbConnectionOptions)}");
         MongoDbConnectionOptions mongoOptions = mongoConnectionOptionsSection.Get<MongoDbConnectionOptions>() ??
                                                 throw new ArgumentException("MongoDBConnectionOptions is missing");
-
+    
+        MongoDb.MapComplexTypes();
+        
         MongoDb.AddClient(
             services: services,
             mongoOptions: mongoOptions);

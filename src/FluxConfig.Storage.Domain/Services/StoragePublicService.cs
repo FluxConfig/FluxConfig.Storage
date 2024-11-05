@@ -2,6 +2,7 @@ using FluentValidation;
 using FluxConfig.Storage.Domain.Contracts.Dal.Entities;
 using FluxConfig.Storage.Domain.Contracts.Dal.Interfaces;
 using FluxConfig.Storage.Domain.Exceptions.Domain;
+using FluxConfig.Storage.Domain.Exceptions.Infrastructure;
 using FluxConfig.Storage.Domain.Models.Public;
 using FluxConfig.Storage.Domain.Services.Interfaces;
 using FluxConfig.Storage.Domain.Validators.Public;
@@ -37,6 +38,12 @@ public class StoragePublicService : IStoragePublicService
             _logger.LogError(ex, "Invalid passed data");
             throw new DomainValidationException("Invalid passed data", ex);
         }
+        catch (EntityNotFoundException ex)
+        {
+            _logger.LogError(ex, "Configuration not found.");
+            throw new DomainNotFoundException("Configuration not found.", ex);
+        }
+        
     }
 
     private async Task<ConfigurationDataModel> GetVaultConfigurationDataUnsafe(
@@ -65,6 +72,11 @@ public class StoragePublicService : IStoragePublicService
         {
             _logger.LogError(ex, "Invalid passed data");
             throw new DomainValidationException("Invalid passed data", ex);
+        }
+        catch (EntityNotFoundException ex)
+        {
+            _logger.LogError(ex, "Configuration not found.");
+            throw new DomainNotFoundException("Configuration not found.", ex);
         }
     }
 
