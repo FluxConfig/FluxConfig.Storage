@@ -30,7 +30,7 @@ public class RealTimeConfigurationRepository : BaseRepository, IRealTimeConfigur
         }
         catch (InvalidOperationException ex)
         {
-            throw new EntityNotFoundException("Configuration data not found", ex);
+            throw new EntityNotFoundException("Configuration data not found", configurationTag, ex);
         }
         catch (Exception ex)
         {

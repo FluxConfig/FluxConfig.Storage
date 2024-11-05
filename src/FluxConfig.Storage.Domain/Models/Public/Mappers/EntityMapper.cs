@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace FluxConfig.Storage.Domain.Models.Public.Mappers;
 
-public static class EntityMappers
+public static class EntityMapper
 {
     public static ConfigurationDataModel MapEntityToModel(this ConfigurationDataEntity entity)
     {

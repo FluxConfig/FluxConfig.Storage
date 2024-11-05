@@ -2,6 +2,7 @@ using System.Text;
 using FluentValidation;
 using FluentValidation.Results;
 using FluxConfig.Storage.Domain.Exceptions.Domain;
+using FluxConfig.Storage.Domain.Exceptions.Infrastructure;
 using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using Google.Rpc;
@@ -11,24 +12,26 @@ using Status = Google.Rpc.Status;
 namespace FluxConfig.Storage.Api.Interceptors.Utils;
 
 public static class RpcExceptionGenerator
-{
+{   
+    //TODO: Separate error handling for public and internal proto, especially this
     public static Status GenerateNotFoundException(DomainNotFoundException exception, ServerCallContext callContext)
     {
         return new Status
         {
             Code = (int)Code.NotFound,
-            Message = "Configuration not found",
+            Message = "Configuration not found. Incorrect configuration tag.",
             Details =
             {
                 Any.Pack(
                     new ErrorInfo
                     {
-                        Reason = "NOT_FOUND",
+                        Reason = "INCORRECT_TAG",
                         Metadata =
                         {
                             new MapField<string, string>()
                             {
-                                { "method", callContext.Method }
+                                { "method", callContext.Method },
+                                {"tag", ((EntityNotFoundException?)exception.InnerException)!.ConfigurationTag}
                             }
                         }
                     }

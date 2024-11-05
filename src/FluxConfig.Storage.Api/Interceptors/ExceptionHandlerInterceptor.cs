@@ -6,6 +6,7 @@ using Status = Google.Rpc.Status;
 
 namespace FluxConfig.Storage.Api.Interceptors;
 
+//TODO: Separate error handling for public and internal proto
 public class ExceptionHandlerInterceptor : Interceptor
 {
     public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(TRequest request,
