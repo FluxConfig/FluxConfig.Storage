@@ -4,6 +4,7 @@ using FluxConfig.Storage.Domain.Contracts.Dal.Interfaces;
 using FluxConfig.Storage.Domain.Exceptions.Domain;
 using FluxConfig.Storage.Domain.Exceptions.Infrastructure;
 using FluxConfig.Storage.Domain.Models.Public;
+using FluxConfig.Storage.Domain.Models.Public.Mappers;
 using FluxConfig.Storage.Domain.Services.Interfaces;
 using FluxConfig.Storage.Domain.Validators.Public;
 using Microsoft.Extensions.Logging;
@@ -43,7 +44,6 @@ public class StoragePublicService : IStoragePublicService
             _logger.LogError(ex, "Configuration not found.");
             throw new DomainNotFoundException("Configuration not found.", ex);
         }
-        
     }
 
     private async Task<ConfigurationDataModel> GetVaultConfigurationDataUnsafe(
@@ -58,7 +58,7 @@ public class StoragePublicService : IStoragePublicService
             cancellationToken: cancellationToken
         );
 
-        return new ConfigurationDataModel(new Dictionary<string, string?> { { "Vault:TestKey", "TestValue" } });
+        return entity.MapEntityToModel();
     }
 
     public async Task<ConfigurationDataModel> GetRealTimeConfigurationData(LoadConfigurationModel loadConfigModel,
@@ -91,8 +91,9 @@ public class StoragePublicService : IStoragePublicService
             cancellationToken: cancellationToken
         );
 
-        return new ConfigurationDataModel(new Dictionary<string, string?> { { "RealTime:TestKey", "TestValue" } });
+        return entity.MapEntityToModel();
     }
+    
 
     private static async Task ValidateLoadConfigModel(LoadConfigurationModel model, CancellationToken cancellationToken)
     {
