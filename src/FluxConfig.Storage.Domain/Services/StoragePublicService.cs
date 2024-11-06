@@ -14,7 +14,6 @@ namespace FluxConfig.Storage.Domain.Services;
 
 public class StoragePublicService : IStoragePublicService
 {
-    //TODO: Remove unnecessary allocation
     private readonly ILogger<StoragePublicService> _logger;
     private readonly IRealTimeConfigurationRepository _realTimeCfgRepository;
     private readonly IVaultConfigurationRepository _vaultRepository;
@@ -109,6 +108,7 @@ public class StoragePublicService : IStoragePublicService
     }
 
 
+    //TODO: REMOVE later
     private static async Task ValidateLoadConfigModel(LoadConfigurationModel model, CancellationToken cancellationToken)
     {
         var validator = new LoadConfigurationModelValidator();

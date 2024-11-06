@@ -19,8 +19,8 @@ public class ExceptionHandlerInterceptor : Interceptor
         }
         catch (Exception ex)
         {
-            RpcException newEx = MapExceptionToRpcException(ex, context);
-            throw newEx;
+            RpcException rpcEx = MapExceptionToRpcException(ex, context);
+            throw rpcEx;
         }
     }
 

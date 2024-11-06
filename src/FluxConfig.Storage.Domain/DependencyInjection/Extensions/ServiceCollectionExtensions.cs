@@ -12,6 +12,7 @@ public static class ServiceCollectionExtensions
         DisableValidationLocalization();
         
         services.AddScoped<IStoragePublicService, StoragePublicService>();
+        services.AddScoped<IStorageInternalService, StorageInternalService>();
         return services;
     }
 
