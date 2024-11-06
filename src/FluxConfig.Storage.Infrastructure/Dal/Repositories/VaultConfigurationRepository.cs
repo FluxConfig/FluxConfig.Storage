@@ -18,13 +18,13 @@ public class VaultConfigurationRepository : BaseRepository, IVaultConfigurationR
     {
     }
 
-    public async Task<ConfigurationDataEntity> LoadConfiguration(string serviceApiKey, string configurationTag,
+    public async Task<ConfigurationDataEntity> LoadConfiguration(string configurationKey, string configurationTag,
         CancellationToken cancellationToken)
     {
         try
         {
             return await LoadConfigurationUnsafe(
-                serviceApiKey: serviceApiKey,
+                configurationKey: configurationKey,
                 configurationTag: configurationTag,
                 cancellationToken: cancellationToken
             );
@@ -39,7 +39,7 @@ public class VaultConfigurationRepository : BaseRepository, IVaultConfigurationR
         }
     }
 
-    private async Task<ConfigurationDataEntity> LoadConfigurationUnsafe(string serviceApiKey, string configurationTag,
+    private async Task<ConfigurationDataEntity> LoadConfigurationUnsafe(string configurationKey, string configurationTag,
         CancellationToken cancellationToken)
     {
         IMongoCollection<ConfigurationDataEntity> configCollection = GetConfigurationCollection();
@@ -47,8 +47,8 @@ public class VaultConfigurationRepository : BaseRepository, IVaultConfigurationR
         var filterBuilder = Builders<ConfigurationDataEntity>.Filter;
 
         var filter = filterBuilder.And(
-            filterBuilder.Eq("api_key", serviceApiKey),
-            filterBuilder.Eq("config_tag", configurationTag)
+            filterBuilder.Eq("key", configurationKey),
+            filterBuilder.Eq("tag", configurationTag)
         );
 
         ConfigurationDataEntity entity = await configCollection.Find(filter).FirstAsync(cancellationToken);

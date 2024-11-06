@@ -21,9 +21,10 @@ public static class MongoDb
             {
                 classMap.AutoMap();
                 classMap.MapIdMember(e => e.Id).SetIdGenerator(ObjectIdGenerator.Instance);
-                classMap.MapMember(e => e.ApiKey).SetElementName("api_key");
-                classMap.MapMember(e => e.ConfigurationTag).SetElementName("config_tag");
-                classMap.MapMember(e => e.ConfigurationData).SetElementName("config_data").SetDefaultValue(new BsonDocument());
+                classMap.MapMember(e => e.ConfigurationKey).SetElementName("key");
+                classMap.MapMember(e => e.ConfigurationTag).SetElementName("tag");
+                classMap.MapMember(e => e.ConfigurationData).SetElementName("data").SetDefaultValue(new BsonDocument());
+                //TODO: Ensure that new documents in collection w/o data gets proper treatment
             }
         );
     }

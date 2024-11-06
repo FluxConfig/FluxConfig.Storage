@@ -4,10 +4,11 @@ using FluxConfig.Storage.Domain.Contracts.Dal.Interfaces;
 using FluxConfig.Storage.Domain.Exceptions.Domain;
 using FluxConfig.Storage.Domain.Exceptions.Infrastructure;
 using FluxConfig.Storage.Domain.Models.Public;
-using FluxConfig.Storage.Domain.Models.Public.Mappers;
 using FluxConfig.Storage.Domain.Services.Interfaces;
 using FluxConfig.Storage.Domain.Validators.Public;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
+using Newtonsoft.Json;
 
 namespace FluxConfig.Storage.Domain.Services;
 
@@ -53,12 +54,14 @@ public class StoragePublicService : IStoragePublicService
         await ValidateLoadConfigModel(loadConfigModel, cancellationToken);
 
         ConfigurationDataEntity entity = await _vaultRepository.LoadConfiguration(
-            serviceApiKey: loadConfigModel.ServiceApiKey,
+            configurationKey: loadConfigModel.ConfigurationKey,
             configurationTag: loadConfigModel.ConfigurationTag,
             cancellationToken: cancellationToken
         );
 
-        return entity.MapEntityToModel();
+        return new ConfigurationDataModel(
+            ConfigurationData: MapBsonToDictionary(entity.ConfigurationData)
+        );
     }
 
     public async Task<ConfigurationDataModel> GetRealTimeConfigurationData(LoadConfigurationModel loadConfigModel,
@@ -86,14 +89,25 @@ public class StoragePublicService : IStoragePublicService
         await ValidateLoadConfigModel(loadConfigModel, cancellationToken);
 
         ConfigurationDataEntity entity = await _realTimeCfgRepository.LoadConfiguration(
-            serviceApiKey: loadConfigModel.ServiceApiKey,
+            configurationKey: loadConfigModel.ConfigurationKey,
             configurationTag: loadConfigModel.ConfigurationTag,
             cancellationToken: cancellationToken
         );
 
-        return entity.MapEntityToModel();
+        return new ConfigurationDataModel(
+            ConfigurationData: MapBsonToDictionary(entity.ConfigurationData)
+        );
     }
-    
+
+    private static Dictionary<string, string> MapBsonToDictionary(BsonDocument bsonConfigMap)
+    {
+        string rawJson = bsonConfigMap.ToJson();
+        Dictionary<string, string> configMap = JsonConvert.DeserializeObject<Dictionary<string, string>>(rawJson) ??
+                                               throw new DomainException(
+                                                   "Exception occured during configuration deserialization");
+        return configMap;
+    }
+
 
     private static async Task ValidateLoadConfigModel(LoadConfigurationModel model, CancellationToken cancellationToken)
     {

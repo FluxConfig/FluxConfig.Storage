@@ -9,7 +9,7 @@ public class StoragePublicGrpcService : GrpcContracts.Public.Storage.StorageBase
 {
     private readonly IStoragePublicService _storagePublicService;
 
-    public StoragePublicGrpcService(IStoragePublicService storageService, ILogger<StoragePublicGrpcService> logger)
+    public StoragePublicGrpcService(IStoragePublicService storageService)
     {
         _storagePublicService = storageService;
     }

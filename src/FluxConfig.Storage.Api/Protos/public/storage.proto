@@ -12,7 +12,7 @@ service Storage {
   rpc LoadRealTimeConfig (LoadConfigRequest) returns (LoadConfigResponse);
 }
 
-// Api key passed as X-API-KEY header metadata
+// Api key passed as X-API-KEY header metadata, config key resolves from auth service
 message LoadConfigRequest {
   string configuration_tag = 1;
 }
