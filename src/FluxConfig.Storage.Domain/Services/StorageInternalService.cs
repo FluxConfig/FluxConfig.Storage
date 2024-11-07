@@ -1,23 +1,34 @@
 using FluentValidation;
+using FluxConfig.Storage.Domain.Contracts.Dal.Entities;
+using FluxConfig.Storage.Domain.Contracts.Dal.Interfaces;
 using FluxConfig.Storage.Domain.Exceptions.Domain;
 using FluxConfig.Storage.Domain.Exceptions.Infrastructure;
 using FluxConfig.Storage.Domain.Models.Internal;
+using FluxConfig.Storage.Domain.Models.Internal.Mappers;
 using FluxConfig.Storage.Domain.Services.Interfaces;
 using FluxConfig.Storage.Domain.Validators.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace FluxConfig.Storage.Domain.Services;
 
-public class StorageInternalService: IStorageInternalService
+public class StorageInternalService : IStorageInternalService
 {
+    private readonly IVaultConfigurationRepository _vaultRepository;
+    private readonly IRealTimeConfigurationRepository _realTimeRepository;
     private readonly ILogger<StorageInternalService> _logger;
 
-    public StorageInternalService(ILogger<StorageInternalService> logger)
+    public StorageInternalService(
+        IVaultConfigurationRepository vaultConfigurationRepository,
+        IRealTimeConfigurationRepository realTimeConfigurationRepository,
+        ILogger<StorageInternalService> logger)
     {
+        _vaultRepository = vaultConfigurationRepository;
+        _realTimeRepository = realTimeConfigurationRepository;
         _logger = logger;
     }
-    
-    public async Task<ConfigurationDataModel> GetVaultConfigurationData(LoadConfigurationModel model, CancellationToken cancellationToken)
+
+    public async Task<ConfigurationDataModel> GetVaultConfigurationData(LoadConfigurationModel model,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -34,16 +45,24 @@ public class StorageInternalService: IStorageInternalService
             throw new DomainNotFoundException("Configuration not found.", ex);
         }
     }
-    
-    private async Task<ConfigurationDataModel> GetVaultConfigurationDataUnsafe(LoadConfigurationModel model, CancellationToken cancellationToken)
+
+    private async Task<ConfigurationDataModel> GetVaultConfigurationDataUnsafe(LoadConfigurationModel model,
+        CancellationToken cancellationToken)
     {
         var validator = new LoadConfigurationModelValidator();
         await validator.ValidateAndThrowAsync(model, cancellationToken);
-        
-        throw new NotImplementedException();
+
+        ConfigurationDataEntity entity = await _vaultRepository.LoadConfiguration(
+            configurationKey: model.ConfigurationKey,
+            configurationTag: model.ConfigurationTag,
+            cancellationToken: cancellationToken
+        );
+
+        return entity.MapEntityToModel();
     }
 
-    public async Task<ConfigurationDataModel> GetRealTimeConfigurationData(LoadConfigurationModel model, CancellationToken cancellationToken)
+    public async Task<ConfigurationDataModel> GetRealTimeConfigurationData(LoadConfigurationModel model,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -60,14 +79,20 @@ public class StorageInternalService: IStorageInternalService
             throw new DomainNotFoundException("Configuration not found.", ex);
         }
     }
-    
-    private async Task<ConfigurationDataModel> GetRealTimeConfigurationDataUnsafe(LoadConfigurationModel model, CancellationToken cancellationToken)
+
+    private async Task<ConfigurationDataModel> GetRealTimeConfigurationDataUnsafe(LoadConfigurationModel model,
+        CancellationToken cancellationToken)
     {
         var validator = new LoadConfigurationModelValidator();
         await validator.ValidateAndThrowAsync(model, cancellationToken);
 
+        ConfigurationDataEntity entity = await _realTimeRepository.LoadConfiguration(
+            configurationKey: model.ConfigurationKey,
+            configurationTag: model.ConfigurationTag,
+            cancellationToken: cancellationToken
+        );
 
-        throw new NotImplementedException();
+        return entity.MapEntityToModel();
     }
 
     public async Task UpdateVaultConfiguration(UpdateConfigurationModel model, CancellationToken cancellationToken)
@@ -82,13 +107,17 @@ public class StorageInternalService: IStorageInternalService
             throw new DomainValidationException("Invalid passed data", ex);
         }
     }
-    
-    private async Task UpdateVaultConfigurationUnsafe(UpdateConfigurationModel model, CancellationToken cancellationToken)
+
+    private async Task UpdateVaultConfigurationUnsafe(UpdateConfigurationModel model,
+        CancellationToken cancellationToken)
     {
         var validator = new UpdateConfigurationModelValidator();
         await validator.ValidateAndThrowAsync(model, cancellationToken);
-        
-        throw new NotImplementedException();
+
+        await _vaultRepository.UpdateConfiguration(
+            updateContainer: model.MapModelToContainer(),
+            cancellationToken: cancellationToken
+        );
     }
 
     public async Task UpdateRealTimeConfiguration(UpdateConfigurationModel model, CancellationToken cancellationToken)
@@ -103,13 +132,17 @@ public class StorageInternalService: IStorageInternalService
             throw new DomainValidationException("Invalid passed data", ex);
         }
     }
-    
-    private async Task UpdateRealTimeConfigurationUnsafe(UpdateConfigurationModel model, CancellationToken cancellationToken)
+
+    private async Task UpdateRealTimeConfigurationUnsafe(UpdateConfigurationModel model,
+        CancellationToken cancellationToken)
     {
         var validator = new UpdateConfigurationModelValidator();
         await validator.ValidateAndThrowAsync(model, cancellationToken);
-        
-        throw new NotImplementedException();
+
+        await _realTimeRepository.UpdateConfiguration(
+            updateContainer: model.MapModelToContainer(),
+            cancellationToken: cancellationToken
+        );
     }
 
     public async Task CreateNewServiceConfiguration(CreateConfigurationModel model, CancellationToken cancellationToken)
@@ -124,12 +157,13 @@ public class StorageInternalService: IStorageInternalService
             throw new DomainValidationException("Invalid passed data", ex);
         }
     }
-    
-    private async Task CreateNewServiceConfigurationUnsafe(CreateConfigurationModel model, CancellationToken cancellationToken)
+
+    private async Task CreateNewServiceConfigurationUnsafe(CreateConfigurationModel model,
+        CancellationToken cancellationToken)
     {
         var validator = new CreateConfigurationModelValidator();
         await validator.ValidateAndThrowAsync(model, cancellationToken);
-        
+
         throw new NotImplementedException();
     }
 
@@ -145,12 +179,13 @@ public class StorageInternalService: IStorageInternalService
             throw new DomainValidationException("Invalid passed data", ex);
         }
     }
-    
-    private async Task DeleteServiceConfigurationUnsafe(DeleteConfigurationModel model, CancellationToken cancellationToken)
+
+    private async Task DeleteServiceConfigurationUnsafe(DeleteConfigurationModel model,
+        CancellationToken cancellationToken)
     {
         var validator = new DeleteConfigurationModelValidator();
         await validator.ValidateAndThrowAsync(model, cancellationToken);
-        
+
         throw new NotImplementedException();
     }
 }

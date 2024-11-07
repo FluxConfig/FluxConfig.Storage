@@ -1,3 +1,4 @@
+using FluxConfig.Storage.Domain.Contracts.Dal.Containers;
 using FluxConfig.Storage.Domain.Contracts.Dal.Entities;
 using FluxConfig.Storage.Domain.Contracts.Dal.Interfaces;
 using FluxConfig.Storage.Domain.Exceptions.Infrastructure;
@@ -53,5 +54,11 @@ public class RealTimeConfigurationRepository : BaseRepository, IRealTimeConfigur
         ConfigurationDataEntity entity = await configCollection.Find(filter).FirstAsync(cancellationToken);
 
         return entity;
+    }
+    
+    public async Task UpdateConfiguration(UpdateConfigurationContainer updateContainer, CancellationToken cancellationToken)
+    {
+        await Task.Delay(TimeSpan.FromMilliseconds(5), cancellationToken);
+        throw new NotImplementedException();
     }
 }
