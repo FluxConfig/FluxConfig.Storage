@@ -61,22 +61,16 @@ public class RealTimeConfigurationRepository : BaseRepository, IRealTimeConfigur
     public async Task UpdateConfiguration(UpdateConfigurationContainer updateContainer,
         CancellationToken cancellationToken)
     {   
-        using var session = await CreateSessionAsync(cancellationToken);
-        
         try
         {
-            session.StartTransaction();
             await UpdateConfigurationUnsafe(updateContainer, cancellationToken);
-            await session.CommitTransactionAsync(cancellationToken);
         }
         catch (InvalidOperationException ex)
         {
-            await session.AbortTransactionAsync(cancellationToken);
             throw new EntityNotFoundException("Configuration data not found", updateContainer.ConfigurationTag, ex);
         }
         catch (Exception ex)
         {
-            await session.AbortTransactionAsync(cancellationToken);
             throw new InfrastructureException("Unexpected exception occured during configurations.realtime update", ex);
         }
     }
