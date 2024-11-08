@@ -4,6 +4,7 @@ using FluxConfig.Storage.Domain.Contracts.Dal.Interfaces;
 using FluxConfig.Storage.Domain.Exceptions.Infrastructure;
 using FluxConfig.Storage.Infrastructure.Configuration.Models;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace FluxConfig.Storage.Infrastructure.Dal.Repositories;
@@ -39,7 +40,8 @@ public class RealTimeConfigurationRepository : BaseRepository, IRealTimeConfigur
         }
     }
 
-    private async Task<ConfigurationDataEntity> LoadConfigurationUnsafe(string configurationKey, string configurationTag,
+    private async Task<ConfigurationDataEntity> LoadConfigurationUnsafe(string configurationKey,
+        string configurationTag,
         CancellationToken cancellationToken)
     {
         IMongoCollection<ConfigurationDataEntity> configCollection = GetConfigurationCollection();
@@ -55,10 +57,53 @@ public class RealTimeConfigurationRepository : BaseRepository, IRealTimeConfigur
 
         return entity;
     }
+
+    public async Task UpdateConfiguration(UpdateConfigurationContainer updateContainer,
+        CancellationToken cancellationToken)
+    {   
+        using var session = await CreateSessionAsync(cancellationToken);
+        
+        try
+        {
+            session.StartTransaction();
+            await UpdateConfigurationUnsafe(updateContainer, cancellationToken);
+            await session.CommitTransactionAsync(cancellationToken);
+        }
+        catch (InvalidOperationException ex)
+        {
+            await session.AbortTransactionAsync(cancellationToken);
+            throw new EntityNotFoundException("Configuration data not found", updateContainer.ConfigurationTag, ex);
+        }
+        catch (Exception ex)
+        {
+            await session.AbortTransactionAsync(cancellationToken);
+            throw new InfrastructureException("Unexpected exception occured during configurations.realtime update", ex);
+        }
+    }
     
-    public async Task UpdateConfiguration(UpdateConfigurationContainer updateContainer, CancellationToken cancellationToken)
+    private async Task UpdateConfigurationUnsafe(UpdateConfigurationContainer updateContainer,
+        CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMilliseconds(5), cancellationToken);
-        throw new NotImplementedException();
+        IMongoCollection<ConfigurationDataEntity> configCollection = GetConfigurationCollection();
+        
+        var filterBuilder = Builders<ConfigurationDataEntity>.Filter;
+
+        var filter = filterBuilder.And(
+            filterBuilder.Eq("key", updateContainer.ConfigurationKey),
+            filterBuilder.Eq("tag", updateContainer.ConfigurationTag)
+        );
+
+        var update = Builders<ConfigurationDataEntity>.Update.Set("data", updateContainer.ConfigurationData);
+
+        var result = await configCollection.UpdateOneAsync(
+            filter: filter,
+            update: update,
+            cancellationToken: cancellationToken
+        );
+
+        if (!result.IsAcknowledged || result.MatchedCount <= 0)
+        {
+            throw new InvalidOperationException();
+        }
     }
 }
