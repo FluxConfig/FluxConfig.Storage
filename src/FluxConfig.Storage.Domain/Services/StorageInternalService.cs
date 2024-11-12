@@ -15,15 +15,18 @@ public class StorageInternalService : IStorageInternalService
 {
     private readonly IVaultConfigurationRepository _vaultRepository;
     private readonly IRealTimeConfigurationRepository _realTimeRepository;
+    private readonly ISharedConfigurationRepository _sharedRepository;
     private readonly ILogger<StorageInternalService> _logger;
 
     public StorageInternalService(
         IVaultConfigurationRepository vaultConfigurationRepository,
         IRealTimeConfigurationRepository realTimeConfigurationRepository,
+        ISharedConfigurationRepository sharedConfigurationRepository,
         ILogger<StorageInternalService> logger)
     {
         _vaultRepository = vaultConfigurationRepository;
         _realTimeRepository = realTimeConfigurationRepository;
+        _sharedRepository = sharedConfigurationRepository;
         _logger = logger;
     }
 
@@ -174,7 +177,11 @@ public class StorageInternalService : IStorageInternalService
         var validator = new CreateConfigurationModelValidator();
         await validator.ValidateAndThrowAsync(model, cancellationToken);
 
-        throw new NotImplementedException();
+        await _sharedRepository.CreateNewConfigurationDocument(
+            configurationKey: model.ConfigurationKey,
+            configurationTag: model.ConfigurationTag,
+            cancellationToken: cancellationToken
+        );
     }
 
     public async Task DeleteServiceConfiguration(DeleteConfigurationModel model, CancellationToken cancellationToken)
@@ -196,6 +203,10 @@ public class StorageInternalService : IStorageInternalService
         var validator = new DeleteConfigurationModelValidator();
         await validator.ValidateAndThrowAsync(model, cancellationToken);
 
-        throw new NotImplementedException();
+        await _sharedRepository.DeleteConfigurationDocument(
+            configurationKey: model.ConfigurationKey,
+            configurationTag: model.ConfigurationTag,
+            cancellationToken: cancellationToken
+        );
     }
 }

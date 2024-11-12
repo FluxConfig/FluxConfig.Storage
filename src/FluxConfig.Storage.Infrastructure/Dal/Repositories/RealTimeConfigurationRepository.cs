@@ -4,7 +4,6 @@ using FluxConfig.Storage.Domain.Contracts.Dal.Interfaces;
 using FluxConfig.Storage.Domain.Exceptions.Infrastructure;
 using FluxConfig.Storage.Infrastructure.Configuration.Models;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace FluxConfig.Storage.Infrastructure.Dal.Repositories;

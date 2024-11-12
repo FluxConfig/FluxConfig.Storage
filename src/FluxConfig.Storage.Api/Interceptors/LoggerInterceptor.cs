@@ -32,6 +32,7 @@ public class LoggerInterceptor : Interceptor
             context.Method, typeof(TRequest), typeof(TResponse));
     }
 
+    //TODO: Remove this later
     private void LogHeaders(ServerCallContext context)
     {
         StringBuilder headersMetadataBuilder = new StringBuilder();

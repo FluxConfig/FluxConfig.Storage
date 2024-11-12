@@ -29,6 +29,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IRealTimeConfigurationRepository, RealTimeConfigurationRepository>();
         services.AddScoped<IVaultConfigurationRepository, VaultConfigurationRepository>();
+        services.AddScoped<ISharedConfigurationRepository, SharedConfigurationRepository>();
 
         return services;
     }
