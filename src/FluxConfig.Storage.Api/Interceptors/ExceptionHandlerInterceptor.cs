@@ -31,6 +31,8 @@ public class ExceptionHandlerInterceptor : Interceptor
             DomainValidationException exception => RpcExceptionGenerator.GenerateBadRequestException(exception),
             
             DomainNotFoundException exception => RpcExceptionGenerator.GenerateNotFoundException(exception, context),
+            
+            DomainAlreadyExistsException exception => RpcExceptionGenerator.GenerateAlreadyExistsException(exception, context),
 
             NotImplementedException => RpcExceptionGenerator.GenerateNotImplementedException(
                 callContext: context),

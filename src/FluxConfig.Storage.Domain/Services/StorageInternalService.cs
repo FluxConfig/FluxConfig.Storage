@@ -169,6 +169,12 @@ public class StorageInternalService : IStorageInternalService
             _logger.LogError(ex, "Invalid passed data");
             throw new DomainValidationException("Invalid passed data", ex);
         }
+        catch (EntityAlreadyExistsException exception)
+        {
+            _logger.LogError(exception, "Duplicate configuration creation");
+            throw new DomainAlreadyExistsException("Duplicate configuration creation", exception);
+        }
+        
     }
 
     private async Task CreateNewServiceConfigurationUnsafe(CreateConfigurationModel model,
@@ -178,8 +184,7 @@ public class StorageInternalService : IStorageInternalService
         await validator.ValidateAndThrowAsync(model, cancellationToken);
 
         await _sharedRepository.CreateNewConfigurationDocument(
-            configurationKey: model.ConfigurationKey,
-            configurationTag: model.ConfigurationTag,
+            configEntity: model.MapModelToEntity() ,
             cancellationToken: cancellationToken
         );
     }
@@ -203,7 +208,7 @@ public class StorageInternalService : IStorageInternalService
         var validator = new DeleteConfigurationModelValidator();
         await validator.ValidateAndThrowAsync(model, cancellationToken);
 
-        await _sharedRepository.DeleteConfigurationDocument(
+        await _sharedRepository.DeleteConfigurationDocuments(
             configurationKey: model.ConfigurationKey,
             configurationTags: model.ConfigurationTags,
             cancellationToken: cancellationToken

@@ -8,6 +8,7 @@ public class DeleteConfigurationModelValidator: AbstractValidator<DeleteConfigur
     public DeleteConfigurationModelValidator()
     {
         RuleFor(x => x.ConfigurationKey).NotEmpty().NotNull();
+        RuleFor(x => x.ConfigurationTags).NotEmpty().NotNull();
         RuleForEach(x => x.ConfigurationTags).ChildRules(tag =>
         {
             tag.RuleFor(x => x).NotEmpty().NotNull();

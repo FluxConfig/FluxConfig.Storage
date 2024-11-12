@@ -12,7 +12,7 @@ using Status = Google.Rpc.Status;
 namespace FluxConfig.Storage.Api.Interceptors.Utils;
 
 public static class RpcExceptionGenerator
-{   
+{
     //TODO: Separate error handling for public and internal proto, especially this
     public static Status GenerateNotFoundException(DomainNotFoundException exception, ServerCallContext callContext)
     {
@@ -31,14 +31,40 @@ public static class RpcExceptionGenerator
                             new MapField<string, string>()
                             {
                                 { "method", callContext.Method },
-                                {"tag", ((EntityNotFoundException?)exception.InnerException)!.ConfigurationTag}
+                                { "tag", ((EntityNotFoundException?)exception.InnerException)!.ConfigurationTag }
                             }
                         }
                     }
                 )
             }
         };
+    }
 
+    public static Status GenerateAlreadyExistsException(DomainAlreadyExistsException exception,
+        ServerCallContext callContext)
+    {
+        return new Status
+        {
+            Code = (int)Code.AlreadyExists,
+            Message = "Configuration already exists. Duplicate configuration tag.",
+            Details =
+            {
+                Any.Pack(
+                    new ErrorInfo
+                    {
+                        Reason = "DUPLICATE_TAG",
+                        Metadata =
+                        {
+                            new MapField<string, string>()
+                            {
+                                { "method", callContext.Method },
+                                { "tag", ((EntityAlreadyExistsException?)exception.InnerException)!.ConfigurationTag }
+                            }
+                        }
+                    }
+                )
+            }
+        };
     }
 
     public static Status GenerateBadRequestException(DomainValidationException exception)
@@ -80,7 +106,7 @@ public static class RpcExceptionGenerator
     {
         RepeatedField<BadRequest.Types.FieldViolation> validations =
             new RepeatedField<BadRequest.Types.FieldViolation>();
-        
+
         if (exception == null)
         {
             return validations;

@@ -24,7 +24,6 @@ public static class MongoDb
                 classMap.MapMember(e => e.ConfigurationKey).SetElementName("key");
                 classMap.MapMember(e => e.ConfigurationTag).SetElementName("tag");
                 classMap.MapMember(e => e.ConfigurationData).SetElementName("data").SetDefaultValue(new BsonDocument());
-                //TODO: Ensure that new documents in collection w/o data gets proper treatment
             }
         );
     }
