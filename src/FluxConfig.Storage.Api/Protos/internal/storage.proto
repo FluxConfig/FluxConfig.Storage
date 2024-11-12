@@ -51,7 +51,7 @@ message CreateServiceConfigResponse {
 
 message DeleteServiceConfigRequest {
   string configuration_key = 1;
-  string configuration_tag = 2;
+  repeated string configuration_tags = 2;
 }
 
 message DeleteServiceConfigResponse {

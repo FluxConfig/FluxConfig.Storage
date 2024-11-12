@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using FluxConfig.Storage.Api.GrpcContracts.Internal;
 using FluxConfig.Storage.Domain.Models.Internal;
 using Google.Protobuf;
@@ -35,7 +36,7 @@ public static class RequestsMapper
     {
         return new DeleteConfigurationModel(
             ConfigurationKey: request.ConfigurationKey,
-            ConfigurationTag: request.ConfigurationTag
+            ConfigurationTags: request.ConfigurationTags.ToImmutableList()
             );
     }
     

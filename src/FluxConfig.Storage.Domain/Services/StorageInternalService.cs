@@ -205,7 +205,7 @@ public class StorageInternalService : IStorageInternalService
 
         await _sharedRepository.DeleteConfigurationDocument(
             configurationKey: model.ConfigurationKey,
-            configurationTag: model.ConfigurationTag,
+            configurationTags: model.ConfigurationTags,
             cancellationToken: cancellationToken
         );
     }

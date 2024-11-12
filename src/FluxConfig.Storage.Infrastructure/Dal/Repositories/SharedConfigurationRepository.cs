@@ -11,7 +11,7 @@ public class SharedConfigurationRepository: ISharedConfigurationRepository
         throw new NotImplementedException();
     }
 
-    public async Task DeleteConfigurationDocument(string configurationKey, string configurationTag, CancellationToken cancellationToken)
+    public async Task DeleteConfigurationDocument(string configurationKey, IReadOnlyList<string> configurationTags, CancellationToken cancellationToken)
     {
         await Task.Delay(TimeSpan.FromMilliseconds(5), cancellationToken);
         throw new NotImplementedException();
