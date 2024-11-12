@@ -10,10 +10,8 @@ services:
         - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       env_file:
         - .env
-      secrets:
-        - db_password
       environment:
-        MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/db_password
+        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
         MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
         MONGO_INITDB_DATABASE: "configurations"
       ports:
@@ -22,8 +20,4 @@ services:
 volumes:
   mongo-data:
     driver: local
-          
-secrets:
-  db_password:
-    file: secrets/MongoDB/password.txt
   
