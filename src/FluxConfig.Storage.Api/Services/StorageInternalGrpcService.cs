@@ -95,7 +95,13 @@ public class StorageInternalGrpcService : GrpcContracts.Internal.Storage.Storage
     public override async Task<ChangeConfigurationTagResponse> ChangeServiceConfigurationTag(
         ChangeConfigurationTagRequest request, ServerCallContext context)
     {
-        await Task.Delay(TimeSpan.FromMicroseconds(5), context.CancellationToken);
-        throw new NotImplementedException();
+        ChangeConfigTagModel changeModel = request.MapRequestToModel();
+
+        await _storageService.ChangeServiceConfigTag(
+            model: changeModel,
+            cancellationToken: context.CancellationToken
+        );
+
+        return new ChangeConfigurationTagResponse();
     }
 }

@@ -39,5 +39,14 @@ public static class RequestsMapper
             ConfigurationTags: request.ConfigurationTags.ToImmutableList()
             );
     }
+
+    public static ChangeConfigTagModel MapRequestToModel(this ChangeConfigurationTagRequest request)
+    {
+        return new ChangeConfigTagModel(
+            ConfigurationKey: request.ConfigurationKey,
+            OldConfigurationTag: request.OldConfigurationTag,
+            NewConfigurationTag: request.NewConfigurationTag
+            );
+    }
     
 }

@@ -17,4 +17,6 @@ public interface IStorageInternalService
     public Task CreateNewServiceConfiguration(CreateConfigurationModel model, CancellationToken cancellationToken);
 
     public Task DeleteServiceConfiguration(DeleteConfigurationModel model, CancellationToken cancellationToken);
+
+    public Task ChangeServiceConfigTag(ChangeConfigTagModel model, CancellationToken cancellationToken);
 }

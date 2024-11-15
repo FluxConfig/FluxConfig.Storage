@@ -206,7 +206,7 @@ public class StorageInternalService : IStorageInternalService
             throw new DomainNotFoundException("Configuration not found.", ex);
         }
     }
-
+    
     private async Task DeleteServiceConfigurationUnsafe(DeleteConfigurationModel model,
         CancellationToken cancellationToken)
     {
@@ -218,5 +218,31 @@ public class StorageInternalService : IStorageInternalService
             configurationTags: model.ConfigurationTags,
             cancellationToken: cancellationToken
         );
+    }
+    
+    public async Task ChangeServiceConfigTag(ChangeConfigTagModel model, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await ChangeServiceConfigTagUnsafe(model, cancellationToken);
+        }
+        catch (ValidationException ex)
+        {
+            _logger.LogError(ex, "Invalid passed data");
+            throw new DomainValidationException("Invalid passed data", ex);
+        }
+        catch (EntityNotFoundException ex)
+        {
+            _logger.LogError(ex, "Configuration not found.");
+            throw new DomainNotFoundException("Configuration not found.", ex);
+        }
+    }
+    
+    private async Task ChangeServiceConfigTagUnsafe(ChangeConfigTagModel model, CancellationToken cancellationToken)
+    {
+        var validator = new ChangeConfigTagModelValidator();
+        await validator.ValidateAndThrowAsync(model, cancellationToken);
+        
+        throw new NotImplementedException();
     }
 }
