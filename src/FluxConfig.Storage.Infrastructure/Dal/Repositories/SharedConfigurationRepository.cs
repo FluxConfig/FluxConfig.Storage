@@ -201,7 +201,66 @@ public class SharedConfigurationRepository : BaseRepository, ISharedConfiguratio
     private async Task ChangeServiceConfigurationTagUnsafe(ChangeTagContainer changeTagContainer,
         CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMilliseconds(5), cancellationToken);
-        throw new NotImplementedException();
+        var tasks = new List<Task>
+        {
+            ChangeVaultConfigurationTag(changeTagContainer, cancellationToken),
+            ChangeRealTimeConfigurationTag(changeTagContainer, cancellationToken)
+        };
+
+        await TaskExt.WhenAll(tasks);
+    }
+
+    private async Task ChangeVaultConfigurationTag(ChangeTagContainer container, CancellationToken cancellationToken)
+    {
+        IMongoDatabase configDb = GetConfigurationDatabase();
+        IMongoCollection<ConfigurationDataEntity> configCollection =
+            configDb.GetCollection<ConfigurationDataEntity>(MongoDbCollectionOptions.VaultTag.ToLower());
+
+        var filterBuilder = Builders<ConfigurationDataEntity>.Filter;
+
+        var filter = filterBuilder.And(
+            filterBuilder.Eq("key", container.ConfigurationKey),
+            filterBuilder.Eq("tag", container.OldConfigTag)
+        );
+
+        var update = Builders<ConfigurationDataEntity>.Update.Set("tag", container.NewConfigTag);
+        
+        var result = await configCollection.UpdateOneAsync(
+            filter: filter,
+            update: update,
+            cancellationToken: cancellationToken
+        );
+
+        if (!result.IsAcknowledged || result.MatchedCount <= 0)
+        {
+            throw new InvalidOperationException();
+        }
+    }
+
+    private async Task ChangeRealTimeConfigurationTag(ChangeTagContainer container, CancellationToken cancellationToken)
+    {
+        IMongoDatabase configDb = GetConfigurationDatabase();
+        IMongoCollection<ConfigurationDataEntity> configCollection =
+            configDb.GetCollection<ConfigurationDataEntity>(MongoDbCollectionOptions.RealTimeTag.ToLower());
+        
+        var filterBuilder = Builders<ConfigurationDataEntity>.Filter;
+        
+        var filter = filterBuilder.And(
+            filterBuilder.Eq("key", container.ConfigurationKey),
+            filterBuilder.Eq("tag", container.OldConfigTag)
+        );
+
+        var update = Builders<ConfigurationDataEntity>.Update.Set("tag", container.NewConfigTag);
+        
+        var result = await configCollection.UpdateOneAsync(
+            filter: filter,
+            update: update,
+            cancellationToken: cancellationToken
+        );
+
+        if (!result.IsAcknowledged || result.MatchedCount <= 0)
+        {
+            throw new InvalidOperationException();
+        }
     }
 }
