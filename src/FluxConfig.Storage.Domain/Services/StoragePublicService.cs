@@ -41,8 +41,8 @@ public class StoragePublicService : IStoragePublicService
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogError(ex, "Configuration not found.");
-            throw new DomainNotFoundException("Configuration not found.", ex);
+            _logger.LogError(ex, "Service configuration not found");
+            throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
 
@@ -77,8 +77,8 @@ public class StoragePublicService : IStoragePublicService
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogError(ex, "Configuration not found.");
-            throw new DomainNotFoundException("Configuration not found.", ex);
+            _logger.LogError(ex, "Service configuration not found");
+            throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
 

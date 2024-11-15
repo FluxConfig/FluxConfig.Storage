@@ -1,3 +1,4 @@
+using FluxConfig.Storage.Domain.Contracts.Dal.Containers;
 using FluxConfig.Storage.Domain.Contracts.Dal.Entities;
 using FluxConfig.Storage.Domain.Contracts.Dal.Interfaces;
 using FluxConfig.Storage.Domain.Exceptions.Infrastructure;
@@ -98,7 +99,7 @@ public class SharedConfigurationRepository : BaseRepository, ISharedConfiguratio
         {
             if (ex.InnerExceptions.Count(e => e is InvalidOperationException) > 0)
             {
-                throw new EntityNotFoundException("Configuration data not found", configurationTags[0], ex);
+                throw new EntityNotFoundException("Service configuration not found", configurationTags[0], ex);
             }
 
             throw new InfrastructureException("Exception occured during configurations deletion", ex);
@@ -176,5 +177,31 @@ public class SharedConfigurationRepository : BaseRepository, ISharedConfiguratio
         {
             throw new InvalidOperationException();
         }
+    }
+
+    public async Task ChangeServiceConfigurationTag(ChangeTagContainer changeTagContainer,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await ChangeServiceConfigurationTagUnsafe(changeTagContainer, cancellationToken);
+        }
+        catch (AggregateException ex)
+        {
+            if (ex.InnerExceptions.Count(e => e is InvalidOperationException) > 0)
+            {
+                throw new EntityNotFoundException("Service configuration not found", changeTagContainer.OldConfigTag,
+                    ex);
+            }
+
+            throw new InfrastructureException("Exception occured during configurations deletion", ex);
+        }
+    }
+
+    private async Task ChangeServiceConfigurationTagUnsafe(ChangeTagContainer changeTagContainer,
+        CancellationToken cancellationToken)
+    {
+        await Task.Delay(TimeSpan.FromMilliseconds(5), cancellationToken);
+        throw new NotImplementedException();
     }
 }

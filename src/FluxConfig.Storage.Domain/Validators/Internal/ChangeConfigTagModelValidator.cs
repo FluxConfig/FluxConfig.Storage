@@ -9,7 +9,7 @@ public class ChangeConfigTagModelValidator: AbstractValidator<ChangeConfigTagMod
     {
         RuleFor(x => x.ConfigurationKey).NotEmpty().NotNull();
         RuleFor(x => x.OldConfigurationTag).NotEmpty().NotNull();
-        RuleFor(x => x.NewConfigurationTag).NotEmpty().NotNull().NotEqual(x => x.NewConfigurationTag);
+        RuleFor(x => x.NewConfigurationTag).NotEmpty().NotNull().NotEqual(x => x.OldConfigurationTag);
     }
     
 }

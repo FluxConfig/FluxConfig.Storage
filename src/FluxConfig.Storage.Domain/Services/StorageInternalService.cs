@@ -44,8 +44,8 @@ public class StorageInternalService : IStorageInternalService
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogError(ex, "Configuration not found.");
-            throw new DomainNotFoundException("Configuration not found.", ex);
+            _logger.LogError(ex, "Service configuration not found.");
+            throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
 
@@ -78,8 +78,8 @@ public class StorageInternalService : IStorageInternalService
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogError(ex, "Configuration not found.");
-            throw new DomainNotFoundException("Configuration not found.", ex);
+            _logger.LogError(ex, "Service configuration not found.");
+            throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
 
@@ -111,8 +111,8 @@ public class StorageInternalService : IStorageInternalService
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogError(ex, "Configuration not found.");
-            throw new DomainNotFoundException("Configuration not found.", ex);
+            _logger.LogError(ex, "Service configuration not found.");
+            throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
 
@@ -141,8 +141,8 @@ public class StorageInternalService : IStorageInternalService
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogError(ex, "Configuration not found.");
-            throw new DomainNotFoundException("Configuration not found.", ex);
+            _logger.LogError(ex, "Service configuration not found.");
+            throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
 
@@ -174,7 +174,6 @@ public class StorageInternalService : IStorageInternalService
             _logger.LogError(exception, "Duplicate configuration creation");
             throw new DomainAlreadyExistsException("Duplicate configuration creation", exception);
         }
-        
     }
 
     private async Task CreateNewServiceConfigurationUnsafe(CreateConfigurationModel model,
@@ -184,7 +183,7 @@ public class StorageInternalService : IStorageInternalService
         await validator.ValidateAndThrowAsync(model, cancellationToken);
 
         await _sharedRepository.CreateNewConfigurationDocument(
-            configEntity: model.MapModelToEntity() ,
+            configEntity: model.MapModelToEntity(),
             cancellationToken: cancellationToken
         );
     }
@@ -202,11 +201,11 @@ public class StorageInternalService : IStorageInternalService
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogError(ex, "Configuration not found.");
-            throw new DomainNotFoundException("Configuration not found.", ex);
+            _logger.LogError(ex, "Service configuration not found.");
+            throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
-    
+
     private async Task DeleteServiceConfigurationUnsafe(DeleteConfigurationModel model,
         CancellationToken cancellationToken)
     {
@@ -219,7 +218,7 @@ public class StorageInternalService : IStorageInternalService
             cancellationToken: cancellationToken
         );
     }
-    
+
     public async Task ChangeServiceConfigTag(ChangeConfigTagModel model, CancellationToken cancellationToken)
     {
         try
@@ -233,16 +232,19 @@ public class StorageInternalService : IStorageInternalService
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogError(ex, "Configuration not found.");
-            throw new DomainNotFoundException("Configuration not found.", ex);
+            _logger.LogError(ex, "Service configuration not found.");
+            throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
-    
+
     private async Task ChangeServiceConfigTagUnsafe(ChangeConfigTagModel model, CancellationToken cancellationToken)
     {
         var validator = new ChangeConfigTagModelValidator();
         await validator.ValidateAndThrowAsync(model, cancellationToken);
-        
-        throw new NotImplementedException();
+
+        await _sharedRepository.ChangeServiceConfigurationTag(
+            changeTagContainer: model.MapModelToContainer(),
+            cancellationToken: cancellationToken
+        );
     }
 }
