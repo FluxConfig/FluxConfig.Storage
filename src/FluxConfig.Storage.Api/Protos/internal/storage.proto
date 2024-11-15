@@ -18,6 +18,8 @@ service Storage {
   rpc CreateServiceConfiguration (CreateServiceConfigRequest) returns (CreateServiceConfigResponse);
   
   rpc DeleteServiceConfiguration (DeleteServiceConfigRequest) returns (DeleteServiceConfigResponse);
+  
+  rpc ChangeServiceConfigurationTag (ChangeConfigurationTagRequest) returns (ChangeConfigurationTagResponse);
 }
 
 message LoadConfigRequest {
@@ -55,4 +57,13 @@ message DeleteServiceConfigRequest {
 }
 
 message DeleteServiceConfigResponse {
+}
+
+message ChangeConfigurationTagRequest {
+  string configuration_key = 1;
+  string old_configuration_tag = 2;
+  string new_configuration_tag = 3;
+}
+
+message ChangeConfigurationTagResponse {
 }

@@ -91,4 +91,11 @@ public class StorageInternalGrpcService : GrpcContracts.Internal.Storage.Storage
 
         return new DeleteServiceConfigResponse();
     }
+
+    public override async Task<ChangeConfigurationTagResponse> ChangeServiceConfigurationTag(
+        ChangeConfigurationTagRequest request, ServerCallContext context)
+    {
+        await Task.Delay(TimeSpan.FromMicroseconds(5), context.CancellationToken);
+        throw new NotImplementedException();
+    }
 }
