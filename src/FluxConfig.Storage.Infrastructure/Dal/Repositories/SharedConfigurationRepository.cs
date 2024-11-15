@@ -90,7 +90,91 @@ public class SharedConfigurationRepository : BaseRepository, ISharedConfiguratio
     public async Task DeleteConfigurationDocuments(string configurationKey, IReadOnlyList<string> configurationTags,
         CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMilliseconds(5), cancellationToken);
-        throw new NotImplementedException();
+        try
+        {
+            await DeleteConfigurationDocumentsUnsafe(configurationKey, configurationTags, cancellationToken);
+        }
+        catch (AggregateException ex)
+        {
+            if (ex.InnerExceptions.Count(e => e is InvalidOperationException) > 0)
+            {
+                throw new EntityNotFoundException("Configuration data not found", configurationTags[0], ex);
+            }
+
+            throw new InfrastructureException("Exception occured during configurations deletion", ex);
+        }
+    }
+
+    private async Task DeleteConfigurationDocumentsUnsafe(
+        string configurationKey,
+        IReadOnlyList<string> configurationTags,
+        CancellationToken cancellationToken)
+    {
+        var deleteOperations = ConvertToDeletionOperations(configurationKey, configurationTags);
+
+        var tasks = new List<Task>
+        {
+            DeleteVaultConfigurations(
+                deleteOperations: deleteOperations,
+                cancellationToken: cancellationToken
+            ),
+            DeleteRealTimeConfigurations(
+                deleteOperations: deleteOperations,
+                cancellationToken: cancellationToken
+            )
+        };
+
+        await TaskExt.WhenAll(tasks);
+    }
+
+    private WriteModel<ConfigurationDataEntity>[] ConvertToDeletionOperations(string configurationKey,
+        IReadOnlyList<string> configurationTags)
+    {
+        return configurationTags.Select(tag =>
+            {
+                var filterBuilder = Builders<ConfigurationDataEntity>.Filter;
+                return new DeleteOneModel<ConfigurationDataEntity>(
+                    filter: filterBuilder.And(
+                        filterBuilder.Eq("key", configurationKey),
+                        filterBuilder.Eq("tag", tag)
+                    )
+                );
+            }
+        ).ToArray<WriteModel<ConfigurationDataEntity>>();
+    }
+
+
+    private async Task DeleteVaultConfigurations(
+        WriteModel<ConfigurationDataEntity>[] deleteOperations, CancellationToken cancellationToken)
+    {
+        IMongoDatabase configDb = GetConfigurationDatabase();
+        IMongoCollection<ConfigurationDataEntity> configCollection =
+            configDb.GetCollection<ConfigurationDataEntity>(MongoDbCollectionOptions.VaultTag.ToLower());
+
+        var result = await configCollection.BulkWriteAsync(
+            requests: deleteOperations,
+            cancellationToken: cancellationToken);
+
+        if (result.IsAcknowledged == false || result.DeletedCount != deleteOperations.Length)
+        {
+            throw new InvalidOperationException();
+        }
+    }
+
+    private async Task DeleteRealTimeConfigurations(
+        WriteModel<ConfigurationDataEntity>[] deleteOperations, CancellationToken cancellationToken)
+    {
+        IMongoDatabase configDb = GetConfigurationDatabase();
+        IMongoCollection<ConfigurationDataEntity> configCollection =
+            configDb.GetCollection<ConfigurationDataEntity>(MongoDbCollectionOptions.RealTimeTag.ToLower());
+
+        var result = await configCollection.BulkWriteAsync(
+            requests: deleteOperations,
+            cancellationToken: cancellationToken);
+
+        if (result.IsAcknowledged == false || result.DeletedCount != deleteOperations.Length)
+        {
+            throw new InvalidOperationException();
+        }
     }
 }

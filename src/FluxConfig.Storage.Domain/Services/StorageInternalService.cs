@@ -200,6 +200,11 @@ public class StorageInternalService : IStorageInternalService
             _logger.LogError(ex, "Invalid passed data");
             throw new DomainValidationException("Invalid passed data", ex);
         }
+        catch (EntityNotFoundException ex)
+        {
+            _logger.LogError(ex, "Configuration not found.");
+            throw new DomainNotFoundException("Configuration not found.", ex);
+        }
     }
 
     private async Task DeleteServiceConfigurationUnsafe(DeleteConfigurationModel model,
