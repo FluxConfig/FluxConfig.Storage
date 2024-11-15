@@ -27,11 +27,14 @@ public class SharedConfigurationRepository : BaseRepository, ISharedConfiguratio
         }
         catch (AggregateException ex)
         {
-            if (ex.InnerExceptions[0] is MongoWriteException &&
-                ((MongoWriteException)ex.InnerExceptions[0]).WriteError.Category == ServerErrorCategory.DuplicateKey)
+            List<MongoWriteException> duplicateExceptions =
+                ex.InnerExceptions.OfType<MongoWriteException>()
+                    .Where(exc => exc.WriteError.Category == ServerErrorCategory.DuplicateKey).ToList();
+
+            if (duplicateExceptions.Count() > 0)
             {
                 throw new EntityAlreadyExistsException("Configuration entity already exists",
-                    configEntity.ConfigurationTag, ex.InnerExceptions[0]);
+                    configEntity.ConfigurationTag, duplicateExceptions[0]);
             }
 
             throw new InfrastructureException("Exception occured during configurations creation", ex);
@@ -55,7 +58,7 @@ public class SharedConfigurationRepository : BaseRepository, ISharedConfiguratio
     {
         IMongoDatabase configDb = GetConfigurationDatabase();
         IMongoCollection<ConfigurationDataEntity> vaultConfigCollection =
-            configDb.GetCollection<ConfigurationDataEntity>("vault");
+            configDb.GetCollection<ConfigurationDataEntity>(MongoDbCollectionOptions.VaultTag.ToLower());
 
         await vaultConfigCollection.InsertOneAsync(
             document: newConfigEntity,
@@ -72,7 +75,7 @@ public class SharedConfigurationRepository : BaseRepository, ISharedConfiguratio
     {
         IMongoDatabase configDb = GetConfigurationDatabase();
         IMongoCollection<ConfigurationDataEntity> vaultConfigCollection =
-            configDb.GetCollection<ConfigurationDataEntity>("realtime");
+            configDb.GetCollection<ConfigurationDataEntity>(MongoDbCollectionOptions.RealTimeTag.ToLower());
 
         await vaultConfigCollection.InsertOneAsync(
             document: newConfigEntity,
