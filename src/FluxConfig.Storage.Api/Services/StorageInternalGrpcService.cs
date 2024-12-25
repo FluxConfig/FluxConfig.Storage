@@ -104,4 +104,28 @@ public class StorageInternalGrpcService : GrpcContracts.Internal.Storage.Storage
 
         return new ChangeConfigurationTagResponse();
     }
+
+    public override async Task<CopyServiceConfigResponse> CopyRTServiceConfiguration(CopyServiceConfigRequest request, ServerCallContext context)
+    {
+        var copyModel = request.MapRequestToModel();
+
+        await _storageService.CopyRealTimeConfigData(
+            model: copyModel,
+            cancellationToken: context.CancellationToken
+            );
+
+        return new CopyServiceConfigResponse();
+    }
+
+    public override async Task<CopyServiceConfigResponse> CopyVaultServiceConfiguration(CopyServiceConfigRequest request, ServerCallContext context)
+    {
+        var copyModel = request.MapRequestToModel();
+
+        await _storageService.CopyVaultConfigData(
+            model: copyModel,
+            cancellationToken: context.CancellationToken
+            );
+
+        return new CopyServiceConfigResponse();
+    }
 }

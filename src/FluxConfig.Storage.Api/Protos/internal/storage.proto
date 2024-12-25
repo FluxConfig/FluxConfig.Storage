@@ -20,6 +20,10 @@ service Storage {
   rpc DeleteServiceConfiguration (DeleteServiceConfigRequest) returns (DeleteServiceConfigResponse);
   
   rpc ChangeServiceConfigurationTag (ChangeConfigurationTagRequest) returns (ChangeConfigurationTagResponse);
+  
+  rpc CopyRTServiceConfiguration(CopyServiceConfigRequest) returns (CopyServiceConfigResponse);
+  
+  rpc CopyVaultServiceConfiguration(CopyServiceConfigRequest) returns (CopyServiceConfigResponse);
 }
 
 message LoadConfigRequest {
@@ -66,4 +70,14 @@ message ChangeConfigurationTagRequest {
 }
 
 message ChangeConfigurationTagResponse {
+}
+
+message CopyServiceConfigRequest {
+  string configuration_key = 1;
+  string source_configuration_tag = 2;
+  string dest_configuration_tag = 3;
+}
+
+message CopyServiceConfigResponse {
+  
 }

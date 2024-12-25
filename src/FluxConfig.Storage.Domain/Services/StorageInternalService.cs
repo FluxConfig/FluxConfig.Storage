@@ -236,7 +236,8 @@ public class StorageInternalService : IStorageInternalService
             throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
-
+    
+    
     private async Task ChangeServiceConfigTagUnsafe(ChangeConfigTagModel model, CancellationToken cancellationToken)
     {
         var validator = new ChangeConfigTagModelValidator();
@@ -246,5 +247,53 @@ public class StorageInternalService : IStorageInternalService
             changeTagContainer: model.MapModelToContainer(),
             cancellationToken: cancellationToken
         );
+    }
+    
+    public async Task CopyRealTimeConfigData(CopyConfigurationModel model, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await CopyRealTimeConfigDataUnsafe(model, cancellationToken);
+        }
+        catch (ValidationException ex)
+        {
+            _logger.LogError(ex, "Invalid passed data");
+            throw new DomainValidationException("Invalid passed data", ex);
+        }
+        catch (EntityNotFoundException ex)
+        {
+            _logger.LogError(ex, "Service configuration not found.");
+            throw new DomainNotFoundException("Service configuration not found", ex);
+        }
+    }
+    
+    private async Task CopyRealTimeConfigDataUnsafe (CopyConfigurationModel model, CancellationToken cancellationToken)
+    {
+        await Task.Delay(TimeSpan.FromMilliseconds(5), cancellationToken);
+        throw new NotImplementedException();
+    }
+
+    public async Task CopyVaultConfigData(CopyConfigurationModel model, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await CopyVaultConfigDataUnsafe(model, cancellationToken);
+        }
+        catch (ValidationException ex)
+        {
+            _logger.LogError(ex, "Invalid passed data");
+            throw new DomainValidationException("Invalid passed data", ex);
+        }
+        catch (EntityNotFoundException ex)
+        {
+            _logger.LogError(ex, "Service configuration not found.");
+            throw new DomainNotFoundException("Service configuration not found", ex);
+        }
+    }
+    
+    private async Task CopyVaultConfigDataUnsafe(CopyConfigurationModel model, CancellationToken cancellationToken)
+    {
+        await Task.Delay(TimeSpan.FromMilliseconds(5), cancellationToken);
+        throw new NotImplementedException();
     }
 }

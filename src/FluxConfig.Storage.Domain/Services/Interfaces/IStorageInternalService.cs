@@ -19,4 +19,8 @@ public interface IStorageInternalService
     public Task DeleteServiceConfiguration(DeleteConfigurationModel model, CancellationToken cancellationToken);
 
     public Task ChangeServiceConfigTag(ChangeConfigTagModel model, CancellationToken cancellationToken);
+
+    public Task CopyRealTimeConfigData(CopyConfigurationModel model, CancellationToken cancellationToken);
+    
+    public Task CopyVaultConfigData(CopyConfigurationModel model, CancellationToken cancellationToken);
 }

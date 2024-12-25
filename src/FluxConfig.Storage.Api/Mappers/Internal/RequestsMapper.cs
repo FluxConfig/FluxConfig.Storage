@@ -48,5 +48,14 @@ public static class RequestsMapper
             NewConfigurationTag: request.NewConfigurationTag
             );
     }
+
+    public static CopyConfigurationModel MapRequestToModel(this CopyServiceConfigRequest request)
+    {
+        return new CopyConfigurationModel(
+            ConfigurationKey: request.ConfigurationKey,
+            SourceConfigurationTag: request.SourceConfigurationTag,
+            DestConfigurationTag: request.DestConfigurationTag
+            );
+    }
     
 }
