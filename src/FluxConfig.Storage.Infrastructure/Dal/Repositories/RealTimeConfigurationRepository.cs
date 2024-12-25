@@ -31,7 +31,7 @@ public class RealTimeConfigurationRepository : BaseRepository, IRealTimeConfigur
         }
         catch (InvalidOperationException ex)
         {
-            throw new EntityNotFoundException("Service configuration not found", configurationTag, ex);
+            throw new EntityNotFoundException("Service configuration not found", configurationTag, configurationKey, ex);
         }
         catch (Exception ex)
         {
@@ -66,7 +66,7 @@ public class RealTimeConfigurationRepository : BaseRepository, IRealTimeConfigur
         }
         catch (InvalidOperationException ex)
         {
-            throw new EntityNotFoundException("Service configuration not found", updateContainer.ConfigurationTag, ex);
+            throw new EntityNotFoundException("Service configuration not found", updateContainer.ConfigurationTag, updateContainer.ConfigurationKey, ex);
         }
         catch (Exception ex)
         {

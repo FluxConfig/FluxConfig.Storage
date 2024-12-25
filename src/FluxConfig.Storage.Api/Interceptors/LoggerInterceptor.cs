@@ -28,11 +28,10 @@ public class LoggerInterceptor : Interceptor
         where TRequest : class
         where TResponse : class
     {
-        _logger.LogInformation(">>Executing call. Method: {methodName}, Request: {requestType}, Response: {responseType}",
+        _logger.LogInformation(">>Start executing call. Method: {methodName}, Request: {requestType}, Response: {responseType}",
             context.Method, typeof(TRequest), typeof(TResponse));
     }
-
-    //TODO: Remove this later
+    
     private void LogHeaders(ServerCallContext context)
     {
         StringBuilder headersMetadataBuilder = new StringBuilder();

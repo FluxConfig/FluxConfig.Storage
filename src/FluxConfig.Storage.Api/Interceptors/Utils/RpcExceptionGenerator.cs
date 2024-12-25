@@ -13,8 +13,8 @@ namespace FluxConfig.Storage.Api.Interceptors.Utils;
 
 public static class RpcExceptionGenerator
 {
-    //TODO: Separate error handling for public and internal proto, especially this
-    public static Status GenerateNotFoundException(DomainNotFoundException exception, ServerCallContext callContext)
+    public static Status PublicGenerateNotFoundException(DomainNotFoundException exception,
+        ServerCallContext callContext)
     {
         return new Status
         {
@@ -40,7 +40,35 @@ public static class RpcExceptionGenerator
         };
     }
 
-    public static Status GenerateAlreadyExistsException(DomainAlreadyExistsException exception,
+    public static Status InternalGenerateNotFoundException(DomainNotFoundException exception,
+        ServerCallContext callContext)
+    {
+        return new Status
+        {
+            Code = (int)Code.NotFound,
+            Message = "Configuration not found.",
+            Details =
+            {
+                Any.Pack(
+                    new ErrorInfo
+                    {
+                        Reason = "INVALID_KEY_TAG",
+                        Metadata =
+                        {
+                            new MapField<string, string>()
+                            {
+                                { "method", callContext.Method },
+                                { "key", ((EntityNotFoundException?)exception.InnerException)!.ConfigurationKey },
+                                { "tag", ((EntityNotFoundException?)exception.InnerException)!.ConfigurationTag }
+                            }
+                        }
+                    }
+                )
+            }
+        };
+    }
+
+    public static Status InternalGenerateAlreadyExistsException(DomainAlreadyExistsException exception,
         ServerCallContext callContext)
     {
         return new Status
@@ -72,7 +100,7 @@ public static class RpcExceptionGenerator
         return new Status
         {
             Code = (int)Code.InvalidArgument,
-            Message = "Bad request.\n" + QueryExceptionMessages(exception),
+            Message = "Bad request. Invalid rpc arguments.",
             Details =
             {
                 Any.Pack(new BadRequest
@@ -86,19 +114,55 @@ public static class RpcExceptionGenerator
         };
     }
 
-    private static string QueryExceptionMessages(Exception exception)
+    public static Status GenerateInternalException(ServerCallContext callContext)
     {
-        StringBuilder messages = new StringBuilder();
-        messages.Append(exception.Message);
-
-        Exception? innerException = exception.InnerException;
-        while (innerException != null)
+        return new Status
         {
-            messages.Append($"\n{innerException.Message}");
-            innerException = innerException.InnerException;
-        }
+            Code = (int)Code.Internal,
+            Message = "Internal error.",
+            Details =
+            {
+                Any.Pack(
+                    new ErrorInfo
+                    {
+                        Reason = "INTERNAL_ERROR",
+                        Metadata =
+                        {
+                            new MapField<string, string>()
+                            {
+                                { "method", callContext.Method }
+                            }
+                        }
+                    }
+                )
+            }
+        };
+    }
 
-        return messages.ToString();
+    public static Status GenerateUnauthenticatedException(ServerCallContext callContext)
+    {
+        return new Status
+        {
+            Code = (int)Code.Unauthenticated,
+            Message = "Invalid X-API-KEY metadata",
+            Details =
+            {
+                Any.Pack(
+                    new ErrorInfo
+                    {
+                        Reason = "INVALID_API_KEY",
+                        Metadata =
+                        {
+                            new MapField<string, string>()
+                            {   
+                                { "x-api-key", callContext.RequestHeaders.GetValue("X-API-KEY") ?? ""},
+                                { "method", callContext.Method }
+                            }
+                        }
+                    }
+                )
+            }
+        };
     }
 
     private static RepeatedField<BadRequest.Types.FieldViolation> QueryUnvalidatedFields(
@@ -122,55 +186,5 @@ public static class RpcExceptionGenerator
         }
 
         return validations;
-    }
-
-    public static Status GenerateNotImplementedException(ServerCallContext callContext)
-    {
-        return new Status
-        {
-            Code = (int)Code.Unimplemented,
-            Message = "Method is not implemented yet.",
-            Details =
-            {
-                Any.Pack(
-                    new ErrorInfo
-                    {
-                        Reason = "NOT_IMPLEMENTED",
-                        Metadata =
-                        {
-                            new MapField<string, string>
-                            {
-                                { "method", callContext.Method }
-                            }
-                        }
-                    }
-                )
-            }
-        };
-    }
-
-    public static Status GenerateInternalException(ServerCallContext callContext)
-    {
-        return new Status
-        {
-            Code = (int)Code.Internal,
-            Message = "Unknown exception occured during the method call.",
-            Details =
-            {
-                Any.Pack(
-                    new ErrorInfo
-                    {
-                        Reason = "INTERNAL_ERROR",
-                        Metadata =
-                        {
-                            new MapField<string, string>()
-                            {
-                                { "method", callContext.Method }
-                            }
-                        }
-                    }
-                )
-            }
-        };
     }
 }

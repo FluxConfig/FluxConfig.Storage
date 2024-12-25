@@ -99,7 +99,8 @@ public class SharedConfigurationRepository : BaseRepository, ISharedConfiguratio
         {
             if (ex.InnerExceptions.Count(e => e is InvalidOperationException) > 0)
             {
-                throw new EntityNotFoundException("Service configuration not found", configurationTags[0], ex);
+                throw new EntityNotFoundException("Service configuration not found", configurationTags[0],
+                    configurationKey, ex);
             }
 
             throw new InfrastructureException("Exception occured during configurations deletion", ex);
@@ -191,7 +192,7 @@ public class SharedConfigurationRepository : BaseRepository, ISharedConfiguratio
             if (ex.InnerExceptions.Count(e => e is InvalidOperationException) > 0)
             {
                 throw new EntityNotFoundException("Service configuration not found", changeTagContainer.OldConfigTag,
-                    ex);
+                    changeTagContainer.ConfigurationKey, ex);
             }
 
             throw new InfrastructureException("Exception occured during configurations deletion", ex);
@@ -224,7 +225,7 @@ public class SharedConfigurationRepository : BaseRepository, ISharedConfiguratio
         );
 
         var update = Builders<ConfigurationDataEntity>.Update.Set("tag", container.NewConfigTag);
-        
+
         var result = await configCollection.UpdateOneAsync(
             filter: filter,
             update: update,
@@ -242,16 +243,16 @@ public class SharedConfigurationRepository : BaseRepository, ISharedConfiguratio
         IMongoDatabase configDb = GetConfigurationDatabase();
         IMongoCollection<ConfigurationDataEntity> configCollection =
             configDb.GetCollection<ConfigurationDataEntity>(MongoDbCollectionOptions.RealTimeTag.ToLower());
-        
+
         var filterBuilder = Builders<ConfigurationDataEntity>.Filter;
-        
+
         var filter = filterBuilder.And(
             filterBuilder.Eq("key", container.ConfigurationKey),
             filterBuilder.Eq("tag", container.OldConfigTag)
         );
 
         var update = Builders<ConfigurationDataEntity>.Update.Set("tag", container.NewConfigTag);
-        
+
         var result = await configCollection.UpdateOneAsync(
             filter: filter,
             update: update,

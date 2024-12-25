@@ -6,8 +6,7 @@ using Status = Google.Rpc.Status;
 
 namespace FluxConfig.Storage.Api.Interceptors;
 
-//TODO: Separate error handling for public and internal proto
-public class ExceptionHandlerInterceptor : Interceptor
+public class PublicExceptionHandlerInterceptor: Interceptor
 {
     public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(TRequest request,
         ServerCallContext context,
@@ -30,12 +29,7 @@ public class ExceptionHandlerInterceptor : Interceptor
         {   
             DomainValidationException exception => RpcExceptionGenerator.GenerateBadRequestException(exception),
             
-            DomainNotFoundException exception => RpcExceptionGenerator.GenerateNotFoundException(exception, context),
-            
-            DomainAlreadyExistsException exception => RpcExceptionGenerator.GenerateAlreadyExistsException(exception, context),
-
-            NotImplementedException => RpcExceptionGenerator.GenerateNotImplementedException(
-                callContext: context),
+            DomainNotFoundException exception => RpcExceptionGenerator.PublicGenerateNotFoundException(exception, context),
             
             _ => RpcExceptionGenerator.GenerateInternalException(
                 callContext: context)

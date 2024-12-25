@@ -108,7 +108,6 @@ public class StoragePublicService : IStoragePublicService
     }
 
 
-    //TODO: REMOVE later
     private static async Task ValidateLoadConfigModel(LoadConfigurationModel model, CancellationToken cancellationToken)
     {
         var validator = new LoadConfigurationModelValidator();

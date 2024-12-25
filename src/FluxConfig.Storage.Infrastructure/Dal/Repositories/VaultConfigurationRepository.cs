@@ -32,7 +32,8 @@ public class VaultConfigurationRepository : BaseRepository, IVaultConfigurationR
         }
         catch (InvalidOperationException ex)
         {
-            throw new EntityNotFoundException("Service configuration not found", configurationTag, ex);
+            throw new EntityNotFoundException("Service configuration not found", configurationTag, configurationKey,
+                ex);
         }
         catch (Exception ex)
         {
@@ -40,7 +41,8 @@ public class VaultConfigurationRepository : BaseRepository, IVaultConfigurationR
         }
     }
 
-    private async Task<ConfigurationDataEntity> LoadConfigurationUnsafe(string configurationKey, string configurationTag,
+    private async Task<ConfigurationDataEntity> LoadConfigurationUnsafe(string configurationKey,
+        string configurationTag,
         CancellationToken cancellationToken)
     {
         IMongoCollection<ConfigurationDataEntity> configCollection = GetConfigurationCollection();
@@ -56,7 +58,7 @@ public class VaultConfigurationRepository : BaseRepository, IVaultConfigurationR
 
         return entity;
     }
-    
+
     public async Task UpdateConfiguration(UpdateConfigurationContainer updateContainer,
         CancellationToken cancellationToken)
     {
@@ -66,14 +68,15 @@ public class VaultConfigurationRepository : BaseRepository, IVaultConfigurationR
         }
         catch (InvalidOperationException ex)
         {
-            throw new EntityNotFoundException("Service configuration not found", updateContainer.ConfigurationTag, ex);
+            throw new EntityNotFoundException("Service configuration not found", updateContainer.ConfigurationTag,
+                updateContainer.ConfigurationKey, ex);
         }
         catch (Exception ex)
         {
             throw new InfrastructureException("Unexpected exception occured during configurations.vault update", ex);
         }
     }
-    
+
     private async Task UpdateConfigurationUnsafe(UpdateConfigurationContainer updateContainer,
         CancellationToken cancellationToken)
     {
