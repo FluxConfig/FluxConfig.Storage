@@ -1,4 +1,5 @@
 using FluentValidation;
+using FluxConfig.Storage.Domain.Contracts.Dal.Containers;
 using FluxConfig.Storage.Domain.Contracts.Dal.Entities;
 using FluxConfig.Storage.Domain.Contracts.Dal.Interfaces;
 using FluxConfig.Storage.Domain.Exceptions.Domain;
@@ -236,8 +237,8 @@ public class StorageInternalService : IStorageInternalService
             throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
-    
-    
+
+
     private async Task ChangeServiceConfigTagUnsafe(ChangeConfigTagModel model, CancellationToken cancellationToken)
     {
         var validator = new ChangeConfigTagModelValidator();
@@ -248,7 +249,7 @@ public class StorageInternalService : IStorageInternalService
             cancellationToken: cancellationToken
         );
     }
-    
+
     public async Task CopyRealTimeConfigData(CopyConfigurationModel model, CancellationToken cancellationToken)
     {
         try
@@ -266,11 +267,26 @@ public class StorageInternalService : IStorageInternalService
             throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
-    
-    private async Task CopyRealTimeConfigDataUnsafe (CopyConfigurationModel model, CancellationToken cancellationToken)
+
+    private async Task CopyRealTimeConfigDataUnsafe(CopyConfigurationModel model, CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMilliseconds(5), cancellationToken);
-        throw new NotImplementedException();
+        var validator = new CopyConfigurationModelValidator();
+        await validator.ValidateAndThrowAsync(model, cancellationToken);
+
+        ConfigurationDataEntity sourceEntity = await _realTimeRepository.LoadConfiguration(
+            configurationKey: model.ConfigurationKey,
+            configurationTag: model.SourceConfigurationTag,
+            cancellationToken: cancellationToken
+        );
+
+        await _realTimeRepository.UpdateConfiguration(
+            updateContainer: new UpdateConfigurationContainer(
+                ConfigurationKey: model.ConfigurationKey,
+                ConfigurationTag: model.DestConfigurationTag,
+                ConfigurationData: sourceEntity.ConfigurationData
+            ),
+            cancellationToken: cancellationToken
+        );
     }
 
     public async Task CopyVaultConfigData(CopyConfigurationModel model, CancellationToken cancellationToken)
@@ -290,10 +306,25 @@ public class StorageInternalService : IStorageInternalService
             throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
-    
+
     private async Task CopyVaultConfigDataUnsafe(CopyConfigurationModel model, CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMilliseconds(5), cancellationToken);
-        throw new NotImplementedException();
+        var validator = new CopyConfigurationModelValidator();
+        await validator.ValidateAndThrowAsync(model, cancellationToken);
+
+        ConfigurationDataEntity sourceEntity = await _vaultRepository.LoadConfiguration(
+            configurationKey: model.ConfigurationKey,
+            configurationTag: model.SourceConfigurationTag,
+            cancellationToken: cancellationToken
+        );
+
+        await _vaultRepository.UpdateConfiguration(
+            updateContainer: new UpdateConfigurationContainer(
+                ConfigurationKey: model.ConfigurationKey,
+                ConfigurationTag: model.DestConfigurationTag,
+                ConfigurationData: sourceEntity.ConfigurationData
+            ),
+            cancellationToken: cancellationToken
+        );
     }
 }
