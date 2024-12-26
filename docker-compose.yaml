@@ -1,6 +1,26 @@
-version: "3.7"
-
 services:
+  storage_api:
+      env_file:
+        - .env
+      build:
+        context: .
+        dockerfile: Dockerfile
+        args:
+          TARGETARCH: ${BUILD_ARCH}
+      platform: ${BUILD_PLATFORM}
+      container_name: storage-api
+      restart: always
+      networks:
+        - app-network
+      environment:
+        - ASPNETCORE_URLS=https://+:443;http://+:80
+        - DOTNET_EnableWriteXorExecute = 0
+        - DOTNET_NUGET_SIGNATURE_VERIFICATION = false
+      ports:
+        - ${STORAGE_API_PORT}:443
+      depends_on:
+        - database
+      
   database:
       image: mongo:latest
       container_name: mongo-db
@@ -8,6 +28,8 @@ services:
       volumes:
         - mongo-data:/data/db
         - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      networks:
+        - app-network
       env_file:
         - .env
       environment:
@@ -20,4 +42,8 @@ services:
 volumes:
   mongo-data:
     driver: local
+    
+networks:
+  app-network:
+    driver: bridge
   
