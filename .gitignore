@@ -449,7 +449,6 @@ test-results/
 # Icon must end with two \r
 Icon
 
-
 # Thumbnails
 ._*
 
@@ -498,5 +497,5 @@ $RECYCLE.BIN/
 *.swp
 
 # Custom
-
+dev.env
 *secrets

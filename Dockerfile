@@ -1,12 +1,10 @@
-FROM --platform=${BUILDPLATFORM} mcr.microsoft.com/dotnet/aspnet:8.0 as base
-EXPOSE 7045
+FROM --platform=${BUILDPLATFORM} mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 
 FROM --platform=${BUILDPLATFORM} mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG TARGETARCH
 WORKDIR /src
 
-#COPY src/*.sln .
 COPY ["src/FluxConfig.Storage.Domain/FluxConfig.Storage.Domain.csproj", "FluxConfig.Storage.Domain/"]
 COPY ["src/FluxConfig.Storage.Infrastructure/FluxConfig.Storage.Infrastructure.csproj", "FluxConfig.Storage.Infrastructure/"]
 COPY ["src/FluxConfig.Storage.Api/FluxConfig.Storage.Api.csproj", "FluxConfig.Storage.Api/"]
