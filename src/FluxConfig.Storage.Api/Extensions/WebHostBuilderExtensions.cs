@@ -10,7 +10,7 @@ public static class WebHostBuilderExtensions
     {
         webHostBuilder.ConfigureKestrel((context, serverOptions) =>
         {
-            serverOptions.ConfigureHttpsDefaults(listenOptions => { listenOptions.SslProtocols = SslProtocols.Tls13; });
+            serverOptions.ConfigureHttpsDefaults(listenOptions => { listenOptions.SslProtocols = SslProtocols.Tls12; });
 
             serverOptions.Listen(IPAddress.Any, 7077, options =>
             {

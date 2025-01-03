@@ -33,9 +33,12 @@ public static class MongoDb
         var settings = MongoClientSettings.FromConnectionString(connectionOptions.ConnectionString);
         settings.Credential = MongoCredential.CreateCredential(
             databaseName: connectionOptions.AuthDb,
-            username: connectionOptions.DbUsername,
-            password: connectionOptions.DbPassword
+            username: Environment.GetEnvironmentVariable("MONGO_USERNAME") ??
+                      throw new ArgumentException("MongoDB username is missing."),
+            password: Environment.GetEnvironmentVariable("MONGO_PASSWORD") ??
+                      throw new ArgumentException("MongoDB password is missing.")
         );
+        settings.ApplicationName = connectionOptions.ApplicationName;
 
         return settings;
     }
