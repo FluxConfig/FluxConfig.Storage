@@ -138,7 +138,8 @@ public static class RpcExceptionGenerator
             }
         };
     }
-
+    
+    //TODO: Link to auth exception
     public static Status GenerateUnauthenticatedException(ServerCallContext callContext)
     {
         return new Status

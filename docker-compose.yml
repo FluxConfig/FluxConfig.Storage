@@ -1,27 +1,18 @@
 services:
   storage_api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        TARGETARCH: ${BUILD_ARCH}
-    platform: ${BUILD_PLATFORM}
-    container_name: storage-api
     image: fluxconfig.storage.api
+    container_name: storage-api
     restart: always
     env_file:
       - ./.env
     environment:
       - DOTNET_GENERATE_ASPNET_CERTIFICATE = false
-      - ASPNETCORE_HTTPS_PORT = 443
-      - ASPNETCORE_URLS=https://0.0.0.0:443
-      # Dockerfile build optimization
-      - DOTNET_EnableWriteXorExecute = 0
-      - DOTNET_NUGET_SIGNATURE_VERIFICATION = false
-    networks:
-      - app-network
+    volumes:
+      - ${EXTERNAL_CERT_PATH}:/https/certs:ro
     ports:
-      - ${STORAGE_API_PORT}:443
+      - ${STORAGE_API_PORT}:7077
+    networks:
+      - fcs-network
     depends_on:
       - database
   
@@ -35,19 +26,17 @@ services:
     env_file:
       - ./.env
     environment:
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
       MONGO_INITDB_DATABASE: "configurations"
     networks:
-      - app-network
-    ports:
-      - ${MONGO_PORT}:27017
+      - fcs-network
 
 volumes:
   mongo-data:
     driver: local
 
 networks:
-  app-network:
+  fcs-network:
     driver: bridge
   
