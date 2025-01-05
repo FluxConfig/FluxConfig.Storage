@@ -1,6 +1,6 @@
 services:
   storage_api:
-    image: fluxconfig.storage.api
+    image: fluxconfig.storage.api:1.0
     container_name: storage-api
     restart: always
     env_file:

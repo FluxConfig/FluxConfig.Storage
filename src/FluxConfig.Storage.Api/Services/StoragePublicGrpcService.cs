@@ -5,7 +5,6 @@ using Grpc.Core;
 
 namespace FluxConfig.Storage.Api.Services;
 
-//TODO: Add complete auth mechanism
 public class StoragePublicGrpcService : GrpcContracts.Public.Storage.StorageBase
 {
     private readonly IStoragePublicService _storagePublicService;

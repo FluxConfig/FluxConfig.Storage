@@ -8,10 +8,8 @@ public static class RequestsMapper
 {
     public static LoadConfigurationModel MapRequestToModel(this LoadConfigRequest request, ServerCallContext callContext)
     {
-        //TODO: REWORK, resolver key from auth service, store logic in auth attribute/interceptor
         return new LoadConfigurationModel(
-            ConfigurationKey: string.Equals("TEST-API-KEY", callContext.RequestHeaders.GetValue("X-API-KEY") ?? "", StringComparison.Ordinal)
-            ? "TEST-CONFIG-KEY" : "Imposter:D",
+            ConfigurationKey: callContext.RequestHeaders.GetValue("X-CFG-KEY")!,
             ConfigurationTag: request.ConfigurationTag
         );
     }

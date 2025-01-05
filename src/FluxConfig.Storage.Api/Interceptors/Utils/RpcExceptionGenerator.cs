@@ -1,4 +1,3 @@
-using System.Text;
 using FluentValidation;
 using FluentValidation.Results;
 using FluxConfig.Storage.Domain.Exceptions.Domain;
@@ -139,13 +138,12 @@ public static class RpcExceptionGenerator
         };
     }
     
-    //TODO: Link to auth exception
     public static Status GenerateUnauthenticatedException(ServerCallContext callContext)
     {
         return new Status
         {
             Code = (int)Code.Unauthenticated,
-            Message = "Invalid X-API-KEY metadata",
+            Message = "Invalid X-API-KEY authentication metadata",
             Details =
             {
                 Any.Pack(

@@ -4,9 +4,9 @@ using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Status = Google.Rpc.Status;
 
-namespace FluxConfig.Storage.Api.Interceptors;
+namespace FluxConfig.Storage.Api.Interceptors.Internal;
 
-public class PublicExceptionHandlerInterceptor: Interceptor
+public class ExceptionHandlerInterceptor : Interceptor
 {
     public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(TRequest request,
         ServerCallContext context,
@@ -26,11 +26,14 @@ public class PublicExceptionHandlerInterceptor: Interceptor
     private static RpcException MapExceptionToRpcException(Exception ex, ServerCallContext context)
     {
         Status status = ex switch
-        {   
+        {
             DomainValidationException exception => RpcExceptionGenerator.GenerateBadRequestException(exception),
-            
-            DomainNotFoundException exception => RpcExceptionGenerator.PublicGenerateNotFoundException(exception, context),
-            
+
+            DomainNotFoundException exception => RpcExceptionGenerator.InternalGenerateNotFoundException(exception, context),
+
+            DomainAlreadyExistsException exception => RpcExceptionGenerator.InternalGenerateAlreadyExistsException(
+                exception, context),
+
             _ => RpcExceptionGenerator.GenerateInternalException(
                 callContext: context)
         };
