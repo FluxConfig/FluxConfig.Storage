@@ -1,3 +1,4 @@
+using FluxConfig.Storage.Api.Exceptions;
 using FluxConfig.Storage.Api.Interceptors.Utils;
 using FluxConfig.Storage.Domain.Exceptions.Domain;
 using Grpc.Core;
@@ -33,6 +34,8 @@ public class ExceptionHandlerInterceptor : Interceptor
 
             DomainAlreadyExistsException exception => RpcExceptionGenerator.InternalGenerateAlreadyExistsException(
                 exception, context),
+            
+            ServiceUnauthenticatedException => RpcExceptionGenerator.GenerateUnauthenticatedException(context),
 
             _ => RpcExceptionGenerator.GenerateInternalException(
                 callContext: context)

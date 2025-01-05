@@ -23,6 +23,7 @@ public static class ServiceCollectionExtensions
             .AddServiceOptions<StorageInternalGrpcService>(options =>
             {
                 options.Interceptors.Add<Interceptors.Internal.ExceptionHandlerInterceptor>();
+                options.Interceptors.Add<Interceptors.Internal.ApiKeyAuthInterceptor>();
             })
             .AddServiceOptions<StoragePublicGrpcService>(options =>
             {
@@ -41,7 +42,7 @@ public static class ServiceCollectionExtensions
         services.AddHttpClient(ManagementServiceClient.ManagementClientTag,
             httpClient =>
             {
-                httpClient.BaseAddress = new Uri(Environment.GetEnvironmentVariable("FC_MANAGEMENT_URL") ??
+                httpClient.BaseAddress = new Uri(Environment.GetEnvironmentVariable("FCM_BASE_URL") ??
                                                  throw new ArgumentException("Management service url address is missing."));
             })
             .AddHttpMessageHandler<InternalAuthHeaderHandler>()
