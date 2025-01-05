@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxConfig.Storage.Api", "src\FluxConfig.Storage.Api\FluxConfig.Storage.Api.csproj", "{F04A714E-F8B6-4F88-B7F6-0B864C166E31}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxConfig.Storage.Domain", "src\FluxConfig.Storage.Domain\FluxConfig.Storage.Domain.csproj", "{5D874E75-14EA-4446-955E-5C8929B7B962}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxConfig.Storage.Infrastructure", "src\FluxConfig.Storage.Infrastructure\FluxConfig.Storage.Infrastructure.csproj", "{E892D017-683D-4328-965A-A5A801C2A05D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{F04A714E-F8B6-4F88-B7F6-0B864C166E31}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F04A714E-F8B6-4F88-B7F6-0B864C166E31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F04A714E-F8B6-4F88-B7F6-0B864C166E31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D874E75-14EA-4446-955E-5C8929B7B962}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D874E75-14EA-4446-955E-5C8929B7B962}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D874E75-14EA-4446-955E-5C8929B7B962}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D874E75-14EA-4446-955E-5C8929B7B962}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E892D017-683D-4328-965A-A5A801C2A05D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E892D017-683D-4328-965A-A5A801C2A05D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E892D017-683D-4328-965A-A5A801C2A05D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E892D017-683D-4328-965A-A5A801C2A05D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

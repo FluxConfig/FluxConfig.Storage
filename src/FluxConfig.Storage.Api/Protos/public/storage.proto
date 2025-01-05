@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/wrappers.proto";
+
 option csharp_namespace = "FluxConfig.Storage.Api.GrpcContracts.Public";
 
 package storage.public.v1;
@@ -11,9 +13,9 @@ service Storage {
 }
 
 message LoadConfigRequest {
-  string configuration_env = 1;
+  string configuration_tag = 1;
 }
 
 message LoadConfigResponse {
-  map<string, string> configuration_data = 1;
+  map<string, google.protobuf.StringValue> configuration_data = 1;
 }

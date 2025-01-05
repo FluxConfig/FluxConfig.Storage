@@ -1,0 +1,42 @@
+services:
+  storage_api:
+    image: fluxconfig.storage.api:1.0
+    container_name: storage-api
+    restart: always
+    env_file:
+      - ./.env
+    environment:
+      - DOTNET_GENERATE_ASPNET_CERTIFICATE = false
+    volumes:
+      - ${EXTERNAL_CERT_PATH}:/https/certs:ro
+    ports:
+      - ${STORAGE_API_PORT}:7077
+    networks:
+      - fcs-network
+    depends_on:
+      - database
+  
+  database:
+    image: mongo:latest
+    container_name: mongo-db
+    restart: always
+    volumes:
+      - mongo-data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    env_file:
+      - ./.env
+    environment:
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_DATABASE: "configurations"
+    networks:
+      - fcs-network
+
+volumes:
+  mongo-data:
+    driver: local
+
+networks:
+  fcs-network:
+    driver: bridge
+  
