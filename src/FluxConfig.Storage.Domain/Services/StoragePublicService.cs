@@ -3,6 +3,7 @@ using FluxConfig.Storage.Domain.Contracts.Dal.Entities;
 using FluxConfig.Storage.Domain.Contracts.Dal.Interfaces;
 using FluxConfig.Storage.Domain.Exceptions.Domain;
 using FluxConfig.Storage.Domain.Exceptions.Infrastructure;
+using FluxConfig.Storage.Domain.Extensions;
 using FluxConfig.Storage.Domain.Models.Public;
 using FluxConfig.Storage.Domain.Services.Interfaces;
 using FluxConfig.Storage.Domain.Validators.Public;
@@ -36,12 +37,22 @@ public class StoragePublicService : IStoragePublicService
         }
         catch (ValidationException ex)
         {
-            _logger.LogError(ex, "Invalid passed data");
+            _logger.LogDomainBadRequestError(
+                curTime: DateTime.Now,
+                tag: loadConfigModel.ConfigurationTag,
+                key: loadConfigModel.ConfigurationKey,
+                exception: ex
+            );
             throw new DomainValidationException("Invalid passed data", ex);
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogError(ex, "Service configuration not found");
+            _logger.LogDomainNotFoundError(
+                curTime: DateTime.Now,
+                tag: ex.ConfigurationTag,
+                key: ex.ConfigurationKey,
+                exception: ex
+            );
             throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
@@ -72,12 +83,22 @@ public class StoragePublicService : IStoragePublicService
         }
         catch (ValidationException ex)
         {
-            _logger.LogError(ex, "Invalid passed data");
+            _logger.LogDomainBadRequestError(
+                curTime: DateTime.Now,
+                tag: loadConfigModel.ConfigurationTag,
+                key: loadConfigModel.ConfigurationKey,
+                exception: ex
+            );
             throw new DomainValidationException("Invalid passed data", ex);
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogError(ex, "Service configuration not found");
+            _logger.LogDomainNotFoundError(
+                curTime: DateTime.Now,
+                tag: ex.ConfigurationTag,
+                key: ex.ConfigurationKey,
+                exception: ex
+            );
             throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }

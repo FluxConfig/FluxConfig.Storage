@@ -19,7 +19,7 @@ public class InternalAuthHeaderHandler : DelegatingHandler
             ArgumentException exc = new ArgumentException(
                     "Internal api-key metadata, needed to authenticate request to authentication api is missing.");
             _logger.LogError(exc,
-                "Internal api-key metadata, needed to authenticate request to authentication api is missing.");
+                "[{curDate}] Internal api-key metadata, needed to authenticate request to authentication api is missing.", DateTime.Now);
             throw exc;
         }
 

@@ -28,7 +28,7 @@ public class LoggerInterceptor : Interceptor
         where TRequest : class
         where TResponse : class
     {
-        _logger.LogInformation(">>Start executing call. Method: {methodName}, Request: {requestType}, Response: {responseType}",
+        _logger.LogInformation("[{curTime}] Start executing call. Method: {methodName}, Request: {requestType}, Response: {responseType}", DateTime.Now,
             context.Method, typeof(TRequest), typeof(TResponse));
     }
     
@@ -43,6 +43,6 @@ public class LoggerInterceptor : Interceptor
         }
         headersEnumerator.Reset();;
         
-        _logger.LogInformation("Passed headers:\n{headersInfo}", headersMetadataBuilder.ToString());
+        _logger.LogDebug("[{curTime}] Passed headers:\n{headersInfo}", DateTime.Now, headersMetadataBuilder.ToString());
     }
 }

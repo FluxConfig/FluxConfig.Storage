@@ -43,29 +43,36 @@ public class ManagementServiceClient : IManagementServiceClient
         }
         catch (HttpRequestException ex)
         {
-            _logger.LogError(ex, "Unable to get the response from auth service");
+            _logger.LogError(ex, "[{curDate}] Unable to get the response from auth service from address {address}",
+                DateTime.Now, client.BaseAddress);
             throw new AuthServiceException("Unable to get the response from auth service", ex);
         }
-        
+
         if (response.StatusCode == HttpStatusCode.Unauthorized)
         {
-            var exc = new ServiceUnauthenticatedException("Invalid internal api-key metadata, needed to authenticate request to authentication api.");
-            _logger.LogError(exc, "Invalid internal api-key metadata, needed to authenticate request to authentication api.");
+            var exc = new ServiceUnauthenticatedException(
+                "Invalid internal api-key metadata, needed to authenticate request to authentication api.");
+            _logger.LogError(exc,
+                "[{curDate}] Invalid internal api-key metadata, needed to authenticate request to authentication api.",
+                DateTime.Now);
             throw exc;
         }
-        
+
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {
             var exc = new ClientServiceUnauthenticatedException("Invalid x-api-key authentication metadata.");
-            _logger.LogError(exc, "Invalid x-api-key authentication metadata.");
+            _logger.LogError(exc, "[{curDate}] Invalid x-api-key authentication metadata: X-API-KEY: {key}.",
+                DateTime.Now, request.ApiKey);
             throw exc;
         }
 
         if (!response.IsSuccessStatusCode)
         {
-            string exceptionString = $"Unable to get the response from auth service with status-code: {(int)response.StatusCode} - {response.StatusCode}";
-            var exc =  new AuthServiceException(exceptionString);
-            _logger.LogError(exc, exceptionString);
+            var exc = new AuthServiceException(
+                $"[{DateTime.Now}] Unable to get the response from auth service with status-code: {(int)response.StatusCode} - {response.StatusCode}");
+            _logger.LogError(exc,
+                "[{curTime}] Unable to get the response from auth service with status-code: {numCode} - {namedCode}",
+                DateTime.Now, (int)response.StatusCode, response.StatusCode);
             throw exc;
         }
 
