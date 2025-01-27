@@ -6,8 +6,8 @@ services:
       args:
         TARGETARCH: ${BUILD_ARCH}
     platform: ${BUILD_PLATFORM}
-    container_name: storage-api
-    image: fluxconfig.storage.api:dev
+    container_name: fc-storage-dev
+    image: fluxconfig.storage:dev
     restart: always
     env_file:
       - ./.env
@@ -28,22 +28,18 @@ services:
       - database
   
   database:
-    image: mongo:latest
-    container_name: mongo-db
+    image: fluxconfig.mongo:dev
+    container_name: fc-mongo-dev
     restart: always
     volumes:
       - mongo-data:/data/db
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     env_file:
       - ./.env
     environment:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
-      MONGO_INITDB_DATABASE: "configurations"
     networks:
       - fcs-network
-    ports:
-      - ${MONGO_PORT}:27017
 
 volumes:
   mongo-data:

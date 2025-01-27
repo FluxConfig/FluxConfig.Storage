@@ -1,7 +1,7 @@
 services:
   storage_api:
-    image: fluxconfig.storage.api:1.0
-    container_name: storage-api
+    image: fluxconfig/fluxconfig.storage:${FC_TAG}
+    container_name: fc-storage
     restart: always
     env_file:
       - ./.env
@@ -17,23 +17,21 @@ services:
       - database
   
   database:
-    image: mongo:latest
-    container_name: mongo-db
+    image: fluxconfig/fluxconfig.mongo:${FC_TAG}
+    container_name: fc-mongo
     restart: always
     volumes:
-      - mongo-data:/data/db
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - fcs-mongo-data:/data/db
     env_file:
       - ./.env
     environment:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
-      MONGO_INITDB_DATABASE: "configurations"
     networks:
       - fcs-network
 
 volumes:
-  mongo-data:
+  fcs-mongo-data:
     driver: local
 
 networks:

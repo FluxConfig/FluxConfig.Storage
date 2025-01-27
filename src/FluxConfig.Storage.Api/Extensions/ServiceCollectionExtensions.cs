@@ -14,10 +14,12 @@ public static class ServiceCollectionExtensions
     {
         services.AddGrpc(options =>
             {
+                options.Interceptors.Add<LoggerInterceptor>();
+                
                 if (environment.IsDevelopment())
                 {
                     options.EnableDetailedErrors = true;
-                    options.Interceptors.Add<LoggerInterceptor>();
+                    options.Interceptors.Add<HeadersLoggerInterceptor>();
                 }
             })
             .AddServiceOptions<StorageInternalGrpcService>(options =>

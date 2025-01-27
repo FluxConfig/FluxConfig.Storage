@@ -1,4 +1,3 @@
-using System.Text;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 
@@ -19,7 +18,6 @@ public class LoggerInterceptor : Interceptor
         UnaryServerMethod<TRequest, TResponse> continuation)
     {   
         LogMethodCall<TRequest, TResponse>(context);
-        LogHeaders(context);
 
         return await continuation(request, context);
     }
@@ -30,19 +28,5 @@ public class LoggerInterceptor : Interceptor
     {
         _logger.LogInformation("[{curTime}] Start executing call. Method: {methodName}, Request: {requestType}, Response: {responseType}", DateTime.Now,
             context.Method, typeof(TRequest), typeof(TResponse));
-    }
-    
-    private void LogHeaders(ServerCallContext context)
-    {
-        StringBuilder headersMetadataBuilder = new StringBuilder();
-
-        using IEnumerator<Metadata.Entry> headersEnumerator = context.RequestHeaders.GetEnumerator();
-        while (headersEnumerator.MoveNext())
-        {
-            headersMetadataBuilder.Append($">>header: {headersEnumerator.Current.Key}, value: {headersEnumerator.Current.Value}\n");
-        }
-        headersEnumerator.Reset();;
-        
-        _logger.LogDebug("[{curTime}] Passed headers:\n{headersInfo}", DateTime.Now, headersMetadataBuilder.ToString());
     }
 }
