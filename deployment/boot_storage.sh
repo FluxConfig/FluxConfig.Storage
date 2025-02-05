@@ -7,7 +7,7 @@ help_description()
   echo ""
   echo "Arguments description :"
   echo "<path_to_config_file> - path to FluxConfig storage .cfg file"
-  echo "To learn about it's structure visit https://github.com/FluxConfig/FluxConfig.Storage/blob/dev/version-1.0/deployment/DEPLOY.md"
+  echo "To learn about it's structure visit https://github.com/FluxConfig/FluxConfig.Storage/blob/master/deployment/DEPLOY.md"
 }
 
 boot_script()
@@ -51,7 +51,7 @@ boot_script()
   
   # Fetching compose file
   ########
-  local COMPOSE_URL="https://raw.githubusercontent.com/FluxConfig/FluxConfig.Storage/refs/heads/dev/version-1.0/deployment/docker-compose.yml"
+  local COMPOSE_URL="https://raw.githubusercontent.com/FluxConfig/FluxConfig.Storage/refs/heads/master/deployment/docker-compose.yml"
   echo "Fetching docker-compose.yml..."
   curl -LJO $COMPOSE_URL || { echo "Failed to fetch docker-compose.yml"; exit 1; }
   echo "docker-compose.yml successfully downloaded"
@@ -67,15 +67,16 @@ boot_script()
     echo "Config file not found. Do you want to download template file? y/n"
     read downloadAc
     if [ "$downloadAc" == "y" ]; then
-      local TEMPLATE_URL="https://raw.githubusercontent.com/FluxConfig/FluxConfig.Storage/refs/heads/dev/version-1.0/deployment/storage.template.cfg"
+      local TEMPLATE_URL="https://raw.githubusercontent.com/FluxConfig/FluxConfig.Storage/refs/heads/master/deployment/storage.template.cfg"
       echo ""
       echo "Fetching storage.template.cfg..."
       curl -LJO $TEMPLATE_URL || { echo "Failed to fetch docker-compose.yml"; exit 1; }
       echo "storage.template.cfg successfully downloaded"
-      echo "Please fill in the configuration file and run this script again."
+      echo "Please fill the configuration file and run this script again."
       echo ""
       exit 0
     fi
+    exit 1;
   fi
   ########
   
@@ -126,7 +127,7 @@ boot_script()
   ########
   echo ""
   echo "Starting the application..."
-#  docker-compose up -d
+  docker-compose up -d
   exit 0
   ########
 }
