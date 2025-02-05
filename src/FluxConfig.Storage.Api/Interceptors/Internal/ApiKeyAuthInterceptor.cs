@@ -10,7 +10,7 @@ public class ApiKeyAuthInterceptor : Interceptor
 
     public ApiKeyAuthInterceptor()
     {
-        _expectedApiKey = Environment.GetEnvironmentVariable("FCS_API_KEY") ??
+        _expectedApiKey = Environment.GetEnvironmentVariable("FC_API_KEY") ??
                           throw new ArgumentException(
                               "Internal api key, needed to authenticate services requests missing.");
     }

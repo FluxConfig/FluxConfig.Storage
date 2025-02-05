@@ -12,7 +12,7 @@ public class InternalAuthHeaderHandler : DelegatingHandler
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        string? internalApiKey = Environment.GetEnvironmentVariable("FCM_API_KEY");
+        string? internalApiKey = Environment.GetEnvironmentVariable("FC_API_KEY");
         
         if (internalApiKey == null)
         {
