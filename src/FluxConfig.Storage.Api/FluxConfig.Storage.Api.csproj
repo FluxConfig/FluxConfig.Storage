@@ -7,11 +7,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Protobuf Include="Protos\public\storage.proto" GrpcServices="Server" />
+        <Protobuf Include="Protos\public\storage.proto" GrpcServices="Server"/>
+        <Protobuf Include="Protos\internal\storage.proto" GrpcServices="Server"/>
     </ItemGroup>
-    
+
     <ItemGroup>
         <PackageReference Include="Grpc.AspNetCore" Version="2.57.0"/>
+        <PackageReference Include="Grpc.StatusProto" Version="2.66.0" />
+        <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="8.0.11" />
     </ItemGroup>
-    
+
+    <ItemGroup>
+      <ProjectReference Include="..\FluxConfig.Storage.Domain\FluxConfig.Storage.Domain.csproj" />
+      <ProjectReference Include="..\FluxConfig.Storage.Infrastructure\FluxConfig.Storage.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>
