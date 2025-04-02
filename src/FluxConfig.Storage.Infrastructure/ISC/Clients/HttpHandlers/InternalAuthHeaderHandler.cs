@@ -1,4 +1,6 @@
-namespace FluxConfig.Storage.Api.Clients.HttpHandlers;
+using Microsoft.Extensions.Logging;
+
+namespace FluxConfig.Storage.Infrastructure.ISC.Clients.HttpHandlers;
 
 public class InternalAuthHeaderHandler : DelegatingHandler
 {

@@ -2,11 +2,12 @@ using System.Net;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
-using FluxConfig.Storage.Api.Clients.Interfaces;
-using FluxConfig.Storage.Api.Contracts.InternalAPI;
-using FluxConfig.Storage.Api.Exceptions;
+using FluxConfig.Storage.Infrastructure.ISC.Clients.Interfaces;
+using FluxConfig.Storage.Infrastructure.ISC.Contracts.ManagementAPI;
+using FluxConfig.Storage.Infrastructure.ISC.Exceptions;
+using Microsoft.Extensions.Logging;
 
-namespace FluxConfig.Storage.Api.Clients;
+namespace FluxConfig.Storage.Infrastructure.ISC.Clients;
 
 public class ManagementServiceClient : IManagementServiceClient
 {
@@ -20,24 +21,18 @@ public class ManagementServiceClient : IManagementServiceClient
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task<AuthClientResponse> AuthenticateClient(AuthClientRequest request,
+    public async Task<AuthClientResponse> AuthenticateClientService(AuthClientRequest request,
         CancellationToken cancellationToken)
     {
         var client = _httpClientFactory.CreateClient(ManagementClientTag);
-
-        var jsonRequest = new StringContent(
-            content: JsonSerializer.Serialize(request),
-            encoding: Encoding.UTF8,
-            mediaType: MediaTypeNames.Application.Json
-        );
+        
 
         HttpResponseMessage response;
 
         try
         {
-            response = await client.PostAsync(
-                requestUri: "/management/services/auth",
-                content: jsonRequest,
+            response = await client.GetAsync(
+                requestUri: $"/api/fcm/configurations/client-service/auth?api_key={request.ApiKey}",
                 cancellationToken: cancellationToken
             );
         }
@@ -58,7 +53,7 @@ public class ManagementServiceClient : IManagementServiceClient
             throw exc;
         }
 
-        if (response.StatusCode == HttpStatusCode.BadRequest)
+        if (response.StatusCode == HttpStatusCode.NotFound)
         {
             var exc = new ClientServiceUnauthenticatedException("Invalid x-api-key authentication metadata.");
             _logger.LogError(exc, "[{curDate}] Invalid x-api-key authentication metadata: X-API-KEY: {key}.",

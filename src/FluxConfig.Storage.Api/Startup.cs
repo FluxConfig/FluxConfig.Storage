@@ -20,7 +20,7 @@ public sealed class Startup
     {
         services
             .AddGrpcWithInterceptors(_environment)
-            .AddAuthClient()
+            .AddFCManagementClient()
             .AddInfrastructureConfigurationOptions(_configuration)
             .AddDalInfrastructure(_configuration)
             .AddDalRepositories()

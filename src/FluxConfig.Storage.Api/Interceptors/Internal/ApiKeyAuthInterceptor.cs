@@ -1,4 +1,4 @@
-using FluxConfig.Storage.Api.Exceptions;
+using FluxConfig.Storage.Infrastructure.ISC.Exceptions;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 

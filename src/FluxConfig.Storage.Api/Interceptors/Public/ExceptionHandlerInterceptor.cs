@@ -1,6 +1,6 @@
-using FluxConfig.Storage.Api.Exceptions;
 using FluxConfig.Storage.Api.Interceptors.Utils;
 using FluxConfig.Storage.Domain.Exceptions.Domain;
+using FluxConfig.Storage.Infrastructure.ISC.Exceptions;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Status = Google.Rpc.Status;

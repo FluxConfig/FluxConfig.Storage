@@ -1,4 +1,4 @@
-namespace FluxConfig.Storage.Api.Exceptions;
+namespace FluxConfig.Storage.Infrastructure.ISC.Exceptions;
 
 public class ClientServiceUnauthenticatedException: Exception
 {
