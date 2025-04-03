@@ -1,6 +1,6 @@
-using FluxConfig.Storage.Api.Clients.Interfaces;
-using FluxConfig.Storage.Api.Contracts.InternalAPI;
-using FluxConfig.Storage.Api.Exceptions;
+using FluxConfig.Storage.Infrastructure.ISC.Clients.Interfaces;
+using FluxConfig.Storage.Infrastructure.ISC.Contracts.ManagementAPI;
+using FluxConfig.Storage.Infrastructure.ISC.Exceptions;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 
@@ -26,9 +26,9 @@ public class ApiKeyAuthInterceptor : Interceptor
     private async Task Authenticate(ServerCallContext context)
     {
         string apiKey = context.RequestHeaders.GetValue("X-API-KEY") ??
-                        throw new ClientServiceUnauthenticatedException("Empty authentication metadata.");
+                        throw new ClientServiceUnauthenticatedException("Empty x-api-key authentication metadata.", "");
 
-        var authResponse = await _managementServiceClient.AuthenticateClient(
+        var authResponse = await _managementServiceClient.AuthenticateClientService(
             request: new AuthClientRequest(apiKey),
             cancellationToken: context.CancellationToken
         );

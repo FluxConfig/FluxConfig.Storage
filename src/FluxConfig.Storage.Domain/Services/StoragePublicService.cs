@@ -3,11 +3,9 @@ using FluxConfig.Storage.Domain.Contracts.Dal.Entities;
 using FluxConfig.Storage.Domain.Contracts.Dal.Interfaces;
 using FluxConfig.Storage.Domain.Exceptions.Domain;
 using FluxConfig.Storage.Domain.Exceptions.Infrastructure;
-using FluxConfig.Storage.Domain.Extensions;
 using FluxConfig.Storage.Domain.Models.Public;
 using FluxConfig.Storage.Domain.Services.Interfaces;
 using FluxConfig.Storage.Domain.Validators.Public;
-using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using Newtonsoft.Json;
 
@@ -15,16 +13,15 @@ namespace FluxConfig.Storage.Domain.Services;
 
 public class StoragePublicService : IStoragePublicService
 {
-    private readonly ILogger<StoragePublicService> _logger;
     private readonly IRealTimeConfigurationRepository _realTimeCfgRepository;
     private readonly IVaultConfigurationRepository _vaultRepository;
 
-    public StoragePublicService(IRealTimeConfigurationRepository realTimeCfgRepository,
-        IVaultConfigurationRepository vaultConfigurationRepository, ILogger<StoragePublicService> logger)
+    public StoragePublicService(
+        IRealTimeConfigurationRepository realTimeCfgRepository,
+        IVaultConfigurationRepository vaultConfigurationRepository)
     {
         _realTimeCfgRepository = realTimeCfgRepository;
         _vaultRepository = vaultConfigurationRepository;
-        _logger = logger;
     }
 
     public async Task<ConfigurationDataModel> GetVaultConfigurationData(
@@ -37,22 +34,10 @@ public class StoragePublicService : IStoragePublicService
         }
         catch (ValidationException ex)
         {
-            _logger.LogDomainBadRequestError(
-                curTime: DateTime.Now,
-                tag: loadConfigModel.ConfigurationTag,
-                key: loadConfigModel.ConfigurationKey,
-                exception: ex
-            );
             throw new DomainValidationException("Invalid passed data", ex);
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogDomainNotFoundError(
-                curTime: DateTime.Now,
-                tag: ex.ConfigurationTag,
-                key: ex.ConfigurationKey,
-                exception: ex
-            );
             throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
@@ -83,22 +68,10 @@ public class StoragePublicService : IStoragePublicService
         }
         catch (ValidationException ex)
         {
-            _logger.LogDomainBadRequestError(
-                curTime: DateTime.Now,
-                tag: loadConfigModel.ConfigurationTag,
-                key: loadConfigModel.ConfigurationKey,
-                exception: ex
-            );
             throw new DomainValidationException("Invalid passed data", ex);
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogDomainNotFoundError(
-                curTime: DateTime.Now,
-                tag: ex.ConfigurationTag,
-                key: ex.ConfigurationKey,
-                exception: ex
-            );
             throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
@@ -124,7 +97,7 @@ public class StoragePublicService : IStoragePublicService
         string rawJson = bsonConfigMap.ToJson();
         Dictionary<string, string> configMap = JsonConvert.DeserializeObject<Dictionary<string, string>>(rawJson) ??
                                                throw new DomainException(
-                                                   "Exception occured during configuration deserialization");
+                                                   "Exception occured during client-service configuration deserialization");
         return configMap;
     }
 
