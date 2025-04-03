@@ -1,29 +1,18 @@
-using Microsoft.Extensions.Logging;
+using FluxConfig.Storage.Infrastructure.ISC.Exceptions;
 
 namespace FluxConfig.Storage.Infrastructure.ISC.Clients.HttpHandlers;
 
 public class InternalAuthHeaderHandler : DelegatingHandler
 {
-    private readonly ILogger<InternalAuthHeaderHandler> _logger;
-
-    public InternalAuthHeaderHandler(ILogger<InternalAuthHeaderHandler> logger)
-    {
-        _logger = logger;
-    }
-
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        string? internalApiKey = Environment.GetEnvironmentVariable("FC_API_KEY");
-        
-        if (internalApiKey == null)
-        {
-            ArgumentException exc = new ArgumentException(
-                    "Internal api-key metadata, needed to authenticate request to authentication api is missing.");
-            _logger.LogError(exc,
-                "[{curDate}] Internal api-key metadata, needed to authenticate request to authentication api is missing.", DateTime.Now);
-            throw exc;
-        }
+        string internalApiKey = Environment.GetEnvironmentVariable("FC_API_KEY")
+                                ?? throw new InternalServiceUnauthenticatedException(
+                                    "Invalid internal api-key metadata, needed to authenticate request to FC Management api.",
+                                    apiKey: "MISSING",
+                                    outgoing: true);
+
 
         request.Headers.Add("X-API-KEY", internalApiKey);
 

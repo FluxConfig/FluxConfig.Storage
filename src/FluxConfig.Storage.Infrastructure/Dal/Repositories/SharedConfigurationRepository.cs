@@ -32,10 +32,10 @@ public class SharedConfigurationRepository : BaseRepository, ISharedConfiguratio
                 ex.InnerExceptions.OfType<MongoWriteException>()
                     .Where(exc => exc.WriteError.Category == ServerErrorCategory.DuplicateKey).ToList();
 
-            if (duplicateExceptions.Count() > 0)
+            if (duplicateExceptions.Count > 0)
             {
                 throw new EntityAlreadyExistsException("Configuration entity already exists",
-                    configEntity.ConfigurationTag, duplicateExceptions[0]);
+                    configEntity.ConfigurationKey, configEntity.ConfigurationTag, duplicateExceptions[0]);
             }
 
             throw new InfrastructureException("Exception occured during configurations creation", ex);

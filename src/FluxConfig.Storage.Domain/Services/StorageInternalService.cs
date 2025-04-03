@@ -4,12 +4,10 @@ using FluxConfig.Storage.Domain.Contracts.Dal.Entities;
 using FluxConfig.Storage.Domain.Contracts.Dal.Interfaces;
 using FluxConfig.Storage.Domain.Exceptions.Domain;
 using FluxConfig.Storage.Domain.Exceptions.Infrastructure;
-using FluxConfig.Storage.Domain.Extensions;
 using FluxConfig.Storage.Domain.Models.Internal;
 using FluxConfig.Storage.Domain.Models.Internal.Mappers;
 using FluxConfig.Storage.Domain.Services.Interfaces;
 using FluxConfig.Storage.Domain.Validators.Internal;
-using Microsoft.Extensions.Logging;
 
 namespace FluxConfig.Storage.Domain.Services;
 
@@ -18,18 +16,15 @@ public class StorageInternalService : IStorageInternalService
     private readonly IVaultConfigurationRepository _vaultRepository;
     private readonly IRealTimeConfigurationRepository _realTimeRepository;
     private readonly ISharedConfigurationRepository _sharedRepository;
-    private readonly ILogger<StorageInternalService> _logger;
 
     public StorageInternalService(
         IVaultConfigurationRepository vaultConfigurationRepository,
         IRealTimeConfigurationRepository realTimeConfigurationRepository,
-        ISharedConfigurationRepository sharedConfigurationRepository,
-        ILogger<StorageInternalService> logger)
+        ISharedConfigurationRepository sharedConfigurationRepository)
     {
         _vaultRepository = vaultConfigurationRepository;
         _realTimeRepository = realTimeConfigurationRepository;
         _sharedRepository = sharedConfigurationRepository;
-        _logger = logger;
     }
 
     public async Task<ConfigurationDataModel> GetVaultConfigurationData(LoadConfigurationModel model,
@@ -41,22 +36,10 @@ public class StorageInternalService : IStorageInternalService
         }
         catch (ValidationException ex)
         {
-            _logger.LogDomainBadRequestError(
-                curTime: DateTime.Now,
-                tag: model.ConfigurationTag,
-                key: model.ConfigurationKey,
-                exception: ex
-            );
             throw new DomainValidationException("Invalid passed data", ex);
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogDomainNotFoundError(
-                curTime: DateTime.Now,
-                tag: ex.ConfigurationTag,
-                key: ex.ConfigurationKey,
-                exception: ex
-            );
             throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
@@ -85,22 +68,10 @@ public class StorageInternalService : IStorageInternalService
         }
         catch (ValidationException ex)
         {
-            _logger.LogDomainBadRequestError(
-                curTime: DateTime.Now,
-                tag: model.ConfigurationTag,
-                key: model.ConfigurationKey,
-                exception: ex
-            );
             throw new DomainValidationException("Invalid passed data", ex);
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogDomainNotFoundError(
-                curTime: DateTime.Now,
-                tag: ex.ConfigurationTag,
-                key: ex.ConfigurationKey,
-                exception: ex
-            );
             throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
@@ -128,23 +99,10 @@ public class StorageInternalService : IStorageInternalService
         }
         catch (ValidationException ex)
         {
-            _logger.LogDomainBadRequestError(
-                curTime: DateTime.Now,
-                tag: model.ConfigurationTag,
-                key: model.ConfigurationKey,
-                exception: ex
-            );
-
             throw new DomainValidationException("Invalid passed data", ex);
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogDomainNotFoundError(
-                curTime: DateTime.Now,
-                tag: ex.ConfigurationTag,
-                key: ex.ConfigurationKey,
-                exception: ex
-            );
             throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
@@ -169,22 +127,10 @@ public class StorageInternalService : IStorageInternalService
         }
         catch (ValidationException ex)
         {
-            _logger.LogDomainBadRequestError(
-                curTime: DateTime.Now,
-                tag: model.ConfigurationTag,
-                key: model.ConfigurationKey,
-                exception: ex
-            );
             throw new DomainValidationException("Invalid passed data", ex);
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogDomainNotFoundError(
-                curTime: DateTime.Now,
-                tag: ex.ConfigurationTag,
-                key: ex.ConfigurationKey,
-                exception: ex
-            );
             throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
@@ -209,22 +155,10 @@ public class StorageInternalService : IStorageInternalService
         }
         catch (ValidationException ex)
         {
-            _logger.LogDomainBadRequestError(
-                curTime: DateTime.Now,
-                tag: model.ConfigurationTag,
-                key: model.ConfigurationKey,
-                exception: ex
-            );
             throw new DomainValidationException("Invalid passed data", ex);
         }
         catch (EntityAlreadyExistsException exception)
         {
-            _logger.LogDomainDuplicateConfigError(
-                curTime: DateTime.Now,
-                key: model.ConfigurationKey,
-                tag: exception.ConfigurationTag,
-                exception: exception
-            );
             throw new DomainAlreadyExistsException("Duplicate configuration creation", exception);
         }
     }
@@ -249,23 +183,10 @@ public class StorageInternalService : IStorageInternalService
         }
         catch (ValidationException ex)
         {
-            _logger.LogDomainBadRequestError(
-                curTime: DateTime.Now,
-                tag: model.ConfigurationTags[0],
-                key: model.ConfigurationKey,
-                exception: ex
-            );
-
             throw new DomainValidationException("Invalid passed data", ex);
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogDomainNotFoundError(
-                curTime: DateTime.Now,
-                tag: ex.ConfigurationTag,
-                key: ex.ConfigurationKey,
-                exception: ex
-            );
             throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
@@ -291,23 +212,10 @@ public class StorageInternalService : IStorageInternalService
         }
         catch (ValidationException ex)
         {
-            _logger.LogDomainBadRequestError(
-                curTime: DateTime.Now,
-                tag: model.OldConfigurationTag,
-                key: model.ConfigurationKey,
-                exception: ex
-            );
-
             throw new DomainValidationException("Invalid passed data", ex);
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogDomainNotFoundError(
-                curTime: DateTime.Now,
-                tag: ex.ConfigurationTag,
-                key: ex.ConfigurationKey,
-                exception: ex
-            );
             throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
@@ -332,22 +240,10 @@ public class StorageInternalService : IStorageInternalService
         }
         catch (ValidationException ex)
         {
-            _logger.LogDomainBadRequestError(
-                curTime: DateTime.Now,
-                tag: model.SourceConfigurationTag,
-                key: model.ConfigurationKey,
-                exception: ex
-            );
             throw new DomainValidationException("Invalid passed data", ex);
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogDomainNotFoundError(
-                curTime: DateTime.Now,
-                tag: ex.ConfigurationTag,
-                key: ex.ConfigurationKey,
-                exception: ex
-            );
             throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }
@@ -381,22 +277,10 @@ public class StorageInternalService : IStorageInternalService
         }
         catch (ValidationException ex)
         {
-            _logger.LogDomainBadRequestError(
-                curTime: DateTime.Now,
-                tag: model.DestConfigurationTag,
-                key: model.ConfigurationKey,
-                exception: ex
-            );
             throw new DomainValidationException("Invalid passed data", ex);
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogDomainNotFoundError(
-                curTime: DateTime.Now,
-                tag: ex.ConfigurationTag,
-                key: ex.ConfigurationKey,
-                exception: ex
-            );
             throw new DomainNotFoundException("Service configuration not found", ex);
         }
     }

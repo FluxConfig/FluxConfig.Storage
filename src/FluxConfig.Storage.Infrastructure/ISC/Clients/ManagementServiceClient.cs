@@ -1,11 +1,8 @@
 using System.Net;
-using System.Net.Mime;
-using System.Text;
 using System.Text.Json;
 using FluxConfig.Storage.Infrastructure.ISC.Clients.Interfaces;
 using FluxConfig.Storage.Infrastructure.ISC.Contracts.ManagementAPI;
 using FluxConfig.Storage.Infrastructure.ISC.Exceptions;
-using Microsoft.Extensions.Logging;
 
 namespace FluxConfig.Storage.Infrastructure.ISC.Clients;
 
@@ -13,19 +10,16 @@ public class ManagementServiceClient : IManagementServiceClient
 {
     internal const string ManagementClientTag = "FCManagement";
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ILogger<ManagementServiceClient> _logger;
 
-    public ManagementServiceClient(ILogger<ManagementServiceClient> logger, IHttpClientFactory httpClientFactory)
+    public ManagementServiceClient(IHttpClientFactory httpClientFactory)
     {
-        _logger = logger;
         _httpClientFactory = httpClientFactory;
     }
-
+    
     public async Task<AuthClientResponse> AuthenticateClientService(AuthClientRequest request,
         CancellationToken cancellationToken)
     {
         var client = _httpClientFactory.CreateClient(ManagementClientTag);
-        
 
         HttpResponseMessage response;
 
@@ -38,42 +32,33 @@ public class ManagementServiceClient : IManagementServiceClient
         }
         catch (HttpRequestException ex)
         {
-            _logger.LogError(ex, "[{curDate}] Unable to get the response from auth service from address {address}",
-                DateTime.Now, client.BaseAddress);
-            throw new AuthServiceException("Unable to get the response from auth service", ex);
+            throw new FcManagementUnavailableException("Unable to get the response from FC Management service",
+                client.BaseAddress, ex);
         }
 
         if (response.StatusCode == HttpStatusCode.Unauthorized)
         {
-            var exc = new ServiceUnauthenticatedException(
-                "Invalid internal api-key metadata, needed to authenticate request to authentication api.");
-            _logger.LogError(exc,
-                "[{curDate}] Invalid internal api-key metadata, needed to authenticate request to authentication api.",
-                DateTime.Now);
-            throw exc;
+            throw new InternalServiceUnauthenticatedException(
+                "Invalid internal api-key metadata, needed to authenticate request to FC Management api.",
+                apiKey: Environment.GetEnvironmentVariable("FC_API_KEY") ?? "MISSING",
+                outgoing: true);
         }
 
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
-            var exc = new ClientServiceUnauthenticatedException("Invalid x-api-key authentication metadata.");
-            _logger.LogError(exc, "[{curDate}] Invalid x-api-key authentication metadata: X-API-KEY: {key}.",
-                DateTime.Now, request.ApiKey);
-            throw exc;
+            throw new ClientServiceUnauthenticatedException("Invalid x-api-key authentication metadata.",
+                request.ApiKey);
         }
 
         if (!response.IsSuccessStatusCode)
         {
-            var exc = new AuthServiceException(
-                $"[{DateTime.Now}] Unable to get the response from auth service with status-code: {(int)response.StatusCode} - {response.StatusCode}");
-            _logger.LogError(exc,
-                "[{curTime}] Unable to get the response from auth service with status-code: {numCode} - {namedCode}",
-                DateTime.Now, (int)response.StatusCode, response.StatusCode);
-            throw exc;
+            throw new FcManagementResponseException("Unexpected response from FC Management service",
+                response.StatusCode, client.BaseAddress);
         }
 
         var rawJson = await response.Content.ReadAsStringAsync(cancellationToken);
         var authResponse = JsonSerializer.Deserialize<AuthClientResponse>(rawJson) ??
-                           throw new JsonException("Invalid auth service response format.");
+                           throw new JsonException("Unexpected FC Management service response format.");
 
         return authResponse;
     }

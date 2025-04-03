@@ -2,15 +2,11 @@ namespace FluxConfig.Storage.Infrastructure.ISC.Exceptions;
 
 public class ClientServiceUnauthenticatedException: Exception
 {
-    public ClientServiceUnauthenticatedException()
+    public string ApiKey { get; set; }
+
+    public ClientServiceUnauthenticatedException(string? message, string apiKey) : base(message)
     {
+        ApiKey = apiKey;
     }
 
-    public ClientServiceUnauthenticatedException(string? message) : base(message)
-    {
-    }
-
-    public ClientServiceUnauthenticatedException(string? message, Exception? innerException) : base(message, innerException)
-    {
-    }
 }

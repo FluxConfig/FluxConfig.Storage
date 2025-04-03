@@ -1,4 +1,5 @@
 using System.Text;
+using FluxConfig.Storage.Api.Extensions;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 
@@ -33,7 +34,13 @@ public class HeadersLoggerInterceptor : Interceptor
             headersMetadataBuilder.Append($">>header: {headersEnumerator.Current.Key}, value: {headersEnumerator.Current.Value}\n");
         }
         headersEnumerator.Reset();;
+
+        string callId = string.Empty;
+        if (context.UserState.TryGetValue(LoggerInterceptor.CallIdKey, out var value))
+        {
+            callId = (value as string) ?? "";;
+        }
         
-        _logger.LogInformation("[{curTime}] Passed headers:\n{headersInfo}", DateTime.Now, headersMetadataBuilder.ToString());
+        _logger.LogCallHeadersMeta(callId, DateTime.Now, headersMetadataBuilder.ToString());
     }
 }

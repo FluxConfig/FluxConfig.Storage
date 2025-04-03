@@ -4,16 +4,12 @@ using Grpc.Core.Interceptors;
 
 namespace FluxConfig.Storage.Api.Interceptors.Internal;
 
+// TODO: Поменять бросалки
 public class ApiKeyAuthInterceptor : Interceptor
 {
-    private readonly string _expectedApiKey;
-
-    public ApiKeyAuthInterceptor()
-    {
-        _expectedApiKey = Environment.GetEnvironmentVariable("FC_API_KEY") ??
-                          throw new ArgumentException(
-                              "Internal api key, needed to authenticate services requests missing.");
-    }
+    private readonly string _expectedApiKey = Environment.GetEnvironmentVariable("FC_API_KEY") ??
+                                              throw new ArgumentException(
+                                                  "Internal api key needed to authenticate requests from FC Management service is missing.");
 
     public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(TRequest request,
         ServerCallContext context,
@@ -25,11 +21,14 @@ public class ApiKeyAuthInterceptor : Interceptor
 
     private void Authenticate(ServerCallContext context)
     {
-        if (!string.Equals(context.RequestHeaders.GetValue("X-API-KEY") ?? "", _expectedApiKey,
-                StringComparison.Ordinal))
+        string requestInternalApiKey = context.RequestHeaders.GetValue("X-API-KEY") ?? "";
+
+        if (!string.Equals(requestInternalApiKey, _expectedApiKey, StringComparison.Ordinal))
         {
-            throw new ServiceUnauthenticatedException(
-                "Invalid internal api-key metadata, needed to authenticate request to storage api.");
+            throw new InternalServiceUnauthenticatedException(
+                "Invalid internal api-key metadata, needed to authenticate request to FC Storage.",
+                apiKey: requestInternalApiKey,
+                outgoing: false);
         }
     }
 }

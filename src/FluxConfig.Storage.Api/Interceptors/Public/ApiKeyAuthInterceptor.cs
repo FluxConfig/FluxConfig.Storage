@@ -26,7 +26,7 @@ public class ApiKeyAuthInterceptor : Interceptor
     private async Task Authenticate(ServerCallContext context)
     {
         string apiKey = context.RequestHeaders.GetValue("X-API-KEY") ??
-                        throw new ClientServiceUnauthenticatedException("Empty authentication metadata.");
+                        throw new ClientServiceUnauthenticatedException("Empty x-api-key authentication metadata.", "");
 
         var authResponse = await _managementServiceClient.AuthenticateClientService(
             request: new AuthClientRequest(apiKey),

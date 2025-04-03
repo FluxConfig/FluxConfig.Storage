@@ -1,3 +1,4 @@
+using FluxConfig.Storage.Api.Extensions;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 
@@ -6,6 +7,7 @@ namespace FluxConfig.Storage.Api.Interceptors;
 public class LoggerInterceptor : Interceptor
 {
     private readonly ILogger<LoggerInterceptor> _logger;
+    internal static readonly object CallIdKey = new();
 
     public LoggerInterceptor(ILogger<LoggerInterceptor> logger)
     {
@@ -16,17 +18,19 @@ public class LoggerInterceptor : Interceptor
         TRequest request,
         ServerCallContext context,
         UnaryServerMethod<TRequest, TResponse> continuation)
-    {   
-        LogMethodCall<TRequest, TResponse>(context);
-
-        return await continuation(request, context);
-    }
-
-    private void LogMethodCall<TRequest, TResponse>(ServerCallContext context)
-        where TRequest : class
-        where TResponse : class
     {
-        _logger.LogInformation("[{curTime}] Start executing call. Method: {methodName}, Request: {requestType}, Response: {responseType}", DateTime.Now,
-            context.Method, typeof(TRequest), typeof(TResponse));
+        string callId = Guid.NewGuid().ToString();
+        context.UserState[CallIdKey] = callId;
+
+        using (_logger.BeginScope(new Dictionary<string, object> { ["CallId"] = callId }))
+        {
+            _logger.LogCallStart(callId, DateTime.Now, context.Method);
+
+            var response = await continuation(request, context);
+
+            _logger.LogSuccessCallEnd(callId, DateTime.Now, context.Method);
+
+            return response;
+        }
     }
 }
