@@ -4,12 +4,14 @@ using Grpc.Core.Interceptors;
 
 namespace FluxConfig.Storage.Api.Interceptors.Internal;
 
-// TODO: Поменять бросалки
+
 public class ApiKeyAuthInterceptor : Interceptor
 {
     private readonly string _expectedApiKey = Environment.GetEnvironmentVariable("FC_API_KEY") ??
-                                              throw new ArgumentException(
-                                                  "Internal api key needed to authenticate requests from FC Management service is missing.");
+                                              throw new InternalServiceUnauthenticatedException(
+                                                  "Internal api key needed to authenticate requests from FC Management service is missing.",
+                                                  apiKey: "MISSING on FluxConfig.Storage service",
+                                                  outgoing: true);
 
     public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(TRequest request,
         ServerCallContext context,
