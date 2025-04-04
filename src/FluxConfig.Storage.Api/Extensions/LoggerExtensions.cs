@@ -8,6 +8,7 @@ public static partial class LoggerExtensions
 
     [LoggerMessage(
         LogLevel.Information,
+        EventId = 2000,
         Message = "[{CallId}] [{CurTime}] Start executing call. Method: {MethodName}.")]
     public static partial void LogCallStart(this ILogger logger,
         string callId,
@@ -17,6 +18,7 @@ public static partial class LoggerExtensions
 
     [LoggerMessage(
         LogLevel.Information,
+        EventId = 2001,
         Message = "[{CallId}] [{CurTime}] Successfully ended executing call. Method: {MethodName}.")]
     public static partial void LogSuccessCallEnd(this ILogger logger,
         string callId,
@@ -26,6 +28,7 @@ public static partial class LoggerExtensions
 
     [LoggerMessage(
         LogLevel.Information,
+        EventId = 2099,
         Message = "[{CallId}] [{CurTime}] Passed headers:\n{HeadersMeta}")]
     public static partial void LogCallHeadersMeta(this ILogger logger,
         string callId,
@@ -38,6 +41,7 @@ public static partial class LoggerExtensions
 
     [LoggerMessage(
         Level = LogLevel.Error,
+        EventId = 4000,
         Message = "[{CallId}] [{CurTime}] Validation error: \n{Violations}"
     )]
     public static partial void LogDomainBadRequestError(this ILogger logger,
@@ -48,6 +52,7 @@ public static partial class LoggerExtensions
 
     [LoggerMessage(
         Level = LogLevel.Error,
+        EventId = 4001,
         Message = "[{CallId}] [{CurTime}] Service configuration not found for Key: {Key} | Tag: {Tag}"
     )]
     public static partial void LogDomainNotFoundError(this ILogger logger,
@@ -58,6 +63,7 @@ public static partial class LoggerExtensions
 
     [LoggerMessage(
         Level = LogLevel.Error,
+        EventId = 4002,
         Message = "[{CallId}] [{CurTime}] Duplicate configuration creation for Key: {Key} | Tag: {Tag}"
     )]
     public static partial void
@@ -70,6 +76,7 @@ public static partial class LoggerExtensions
 
     [LoggerMessage(
         Level = LogLevel.Error,
+        EventId = 4003,
         Message = "[{CallId}] [{CurTime}] Unexpected exception occured during rpc call."
     )]
     public static partial void LogInternalError(this ILogger logger,
@@ -79,6 +86,7 @@ public static partial class LoggerExtensions
 
     [LoggerMessage(
         Level = LogLevel.Error,
+        EventId = 4004,
         Message = "[{CallId}] [{CurTime}] Unable to get the response from FC Management service for address: {Address}"
     )]
     public static partial void LogFcManagementUnavailable(
@@ -90,6 +98,7 @@ public static partial class LoggerExtensions
 
     [LoggerMessage(
         Level = LogLevel.Error,
+        EventId = 4005,
         Message =
             "[{CallId}] [{CurTime}] Unexpected response from FC Management service for address: {Address} with status-code: {StatusCode} - {NamedStatusCode}"
     )]
@@ -103,6 +112,7 @@ public static partial class LoggerExtensions
 
     [LoggerMessage(
         Level = LogLevel.Error,
+        EventId = 4006,
         Message =
             "[{CallId}] [{CurTime}] Invalid internal api-key authentication metadata needed to access FC Management api. X-API-KEY: {ApiKey}"
     )]
@@ -114,6 +124,7 @@ public static partial class LoggerExtensions
     
     [LoggerMessage(
         Level = LogLevel.Error,
+        EventId = 4007,
         Message =
             "[{CallId}] [{CurTime}] Given invalid internal api-key authentication metadata needed to access FC Storage api. X-API-KEY: {ApiKey}"
     )]
@@ -125,6 +136,7 @@ public static partial class LoggerExtensions
     
     [LoggerMessage(
         Level = LogLevel.Error,
+        EventId = 4008,
         Message =
             "[{CallId}] [{CurTime}] Invalid service api-key authentication metadata needed to access configuration. X-API-KEY: {ApiKey}."
     )]
