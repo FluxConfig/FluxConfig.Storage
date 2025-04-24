@@ -53,7 +53,21 @@ boot_script()
   ########
   local COMPOSE_URL="https://raw.githubusercontent.com/FluxConfig/FluxConfig.Storage/refs/heads/master/deployment/docker-compose.yml"
   echo "Fetching docker-compose.yml..."
-  curl -LJO $COMPOSE_URL || { echo "Failed to fetch docker-compose.yml"; exit 1; }
+  
+  curl -fsSL -o docker-compose.yml "$COMPOSE_URL"
+    
+  if [ $? -ne 0 ]; then
+    echo "Failed to fetch docker-compose.yml:"
+    echo "  - HTTP Error or network failure"
+    exit 1
+  elif [ ! -f "docker-compose.yml" ]; then
+    echo "Download failed - no file created"
+    exit 1
+  elif [ ! -s "docker-compose.yml" ]; then
+    echo "Download failed - empty file received"
+    exit 1
+  fi
+  
   echo "docker-compose.yml successfully downloaded"
   echo ""
   ########
@@ -70,7 +84,21 @@ boot_script()
       local TEMPLATE_URL="https://raw.githubusercontent.com/FluxConfig/FluxConfig.Storage/refs/heads/master/deployment/storage.template.cfg"
       echo ""
       echo "Fetching storage.template.cfg..."
-      curl -LJO $TEMPLATE_URL || { echo "Failed to fetch docker-compose.yml"; exit 1; }
+      
+      curl -fsSL -o management.template.cfg "$TEMPLATE_URL"
+              
+      if [ $? -ne 0 ]; then
+        echo "Failed to fetch docker-compose.yml:"
+        echo "  - HTTP Error or network failure"
+        exit 1
+      elif [ ! -f "docker-compose.yml" ]; then
+        echo "Download failed - no file created"
+        exit 1
+      elif [ ! -s "docker-compose.yml" ]; then
+        echo "Download failed - empty file received"
+        exit 1
+      fi
+      
       echo "storage.template.cfg successfully downloaded"
       echo "Please fill the configuration file and run this script again."
       echo ""
@@ -88,7 +116,7 @@ boot_script()
   fi
   truncate -s 0 ".env"
   
-  echo "Loading .cfg file..."
+  echo "Reading .cfg file..."
   while IFS= read -r line || [[ -n "$line" ]]; do
       if [[ "$line" =~ ^#.*$ || -z "$line" ]]; then
           continue
@@ -103,19 +131,19 @@ boot_script()
       if [ "$key" == "MONGO_USERNAME" ] && [ -z "$value" ]; then
         echo ""
         echo "Generating value for MONGO_USERNAME"
-        value=$(uuidgen)
+        value="u$(uuidgen | tr -d '-' | tr '[:upper:]' '[:lower:]')"
       fi
 
       if [ "$key" == "MONGO_PASSWORD" ] && [ -z "$value" ]; then
         echo ""
         echo "Generating value for MONGO_PASSWORD"
-        value=$(uuidgen)
+        value=$(uuidgen | tr -d '-' | tr '[:upper:]' '[:lower:]')
       fi
 
       if [ "$key" == "FC_API_KEY" ] && [ -z "$value" ]; then
         echo ""
         echo "Generating value for FC_API_KEY"
-        value=$(uuidgen)
+        value=$(uuidgen | tr -d '-' | tr '[:upper:]' '[:lower:]')
       fi
     
       printf "$key=$value\n" >> .env
@@ -123,10 +151,10 @@ boot_script()
   done < "$pathToConfig"
   ########
   
-  # Booting the application 
+  # Booting
   ########
   echo ""
-  echo "Starting the application..."
+  echo "Starting FluxConfig Storage..."
   docker-compose up -d
   exit 0
   ########
