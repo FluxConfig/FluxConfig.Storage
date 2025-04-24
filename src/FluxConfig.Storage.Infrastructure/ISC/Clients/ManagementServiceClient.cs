@@ -1,5 +1,7 @@
 using System.Net;
 using System.Text.Json;
+using FluxConfig.Storage.Domain.Exceptions.Domain;
+using FluxConfig.Storage.Domain.Exceptions.Infrastructure;
 using FluxConfig.Storage.Infrastructure.ISC.Clients.Interfaces;
 using FluxConfig.Storage.Infrastructure.ISC.Contracts.ManagementAPI;
 using FluxConfig.Storage.Infrastructure.ISC.Exceptions;
@@ -15,7 +17,7 @@ public class ManagementServiceClient : IManagementServiceClient
     {
         _httpClientFactory = httpClientFactory;
     }
-    
+
     public async Task<AuthClientResponse> AuthenticateClientService(AuthClientRequest request,
         CancellationToken cancellationToken)
     {
@@ -44,10 +46,22 @@ public class ManagementServiceClient : IManagementServiceClient
                 outgoing: true);
         }
 
-        if (response.StatusCode == HttpStatusCode.NotFound)
+        if (response.StatusCode == HttpStatusCode.BadRequest)
         {
             throw new ClientServiceUnauthenticatedException("Invalid x-api-key authentication metadata.",
                 request.ApiKey);
+        }
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new DomainNotFoundException(
+                message: "Service configuration not found",
+                innerException: new EntityNotFoundException(
+                    message: "Service configuration not found",
+                    tag: request.Tag,
+                    key: ""
+                )
+            );
         }
 
         if (!response.IsSuccessStatusCode)
