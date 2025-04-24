@@ -1,3 +1,4 @@
+using FluxConfig.Storage.Api.GrpcContracts.Public;
 using FluxConfig.Storage.Infrastructure.ISC.Clients.Interfaces;
 using FluxConfig.Storage.Infrastructure.ISC.Contracts.ManagementAPI;
 using FluxConfig.Storage.Infrastructure.ISC.Exceptions;
@@ -19,17 +20,30 @@ public class ApiKeyAuthInterceptor : Interceptor
         ServerCallContext context,
         UnaryServerMethod<TRequest, TResponse> continuation)
     {
-        await Authenticate(context);
+        string configurationTag;
+        if (request is LoadConfigRequest loadConfigRequest)
+        {
+            configurationTag = loadConfigRequest.ConfigurationTag ?? "";
+        }
+        else
+        {
+            throw new ClientServiceUnauthenticatedException("Invalid rpc method message type", "");
+        }
+        
+        await Authenticate(context, configurationTag);
         return await continuation(request, context);
     }
 
-    private async Task Authenticate(ServerCallContext context)
+    private async Task Authenticate(ServerCallContext context, string configurationTag)
     {
         string apiKey = context.RequestHeaders.GetValue("X-API-KEY") ??
                         throw new ClientServiceUnauthenticatedException("Empty x-api-key authentication metadata.", "");
-
+        
         var authResponse = await _managementServiceClient.AuthenticateClientService(
-            request: new AuthClientRequest(apiKey),
+            request: new AuthClientRequest(
+                ApiKey: apiKey,
+                Tag: configurationTag
+            ),
             cancellationToken: context.CancellationToken
         );
 

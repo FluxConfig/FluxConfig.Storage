@@ -26,7 +26,7 @@ public class ManagementServiceClient : IManagementServiceClient
         try
         {
             response = await client.GetAsync(
-                requestUri: $"/api/fcm/configurations/client-service/auth?api_key={request.ApiKey}",
+                requestUri: $"/api/fcm/configurations/client-service/auth?ApiKey={request.ApiKey}&Tag={request.Tag}",
                 cancellationToken: cancellationToken
             );
         }
