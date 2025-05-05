@@ -11,7 +11,7 @@ COPY ["src/FluxConfig.Storage.Api/FluxConfig.Storage.Api.csproj", "FluxConfig.St
 
 RUN dotnet restore "FluxConfig.Storage.Api/FluxConfig.Storage.Api.csproj" --arch ${TARGETARCH}
 COPY src/. .
-RUN dotnet build "FluxConfig.Storage.Api/FluxConfig.Storage.Api.csproj" -c Release --no-restore
+RUN dotnet build "FluxConfig.Storage.Api/FluxConfig.Storage.Api.csproj" -c Release --no-restore --arch ${TARGETARCH}
 
 WORKDIR "/src/FluxConfig.Storage.Api"
 FROM build AS publish
