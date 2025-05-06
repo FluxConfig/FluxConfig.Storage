@@ -11,13 +11,9 @@ COPY ["src/FluxConfig.Storage.Api/FluxConfig.Storage.Api.csproj", "FluxConfig.St
 
 RUN dotnet restore "FluxConfig.Storage.Api/FluxConfig.Storage.Api.csproj" --arch ${TARGETARCH}
 COPY src/. .
-RUN dotnet build "FluxConfig.Storage.Api/FluxConfig.Storage.Api.csproj" -c Release --no-restore --arch ${TARGETARCH}
-
-WORKDIR "/src/FluxConfig.Storage.Api"
-FROM build AS publish
-RUN dotnet publish "FluxConfig.Storage.Api.csproj" --arch ${TARGETARCH}  -c Release -o /app/publish --no-restore /p:UseAppHost=false
+RUN dotnet publish "FluxConfig.Storage.Api/FluxConfig.Storage.Api.csproj" --arch ${TARGETARCH} -c Release --no-restore -o /app/publish
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "FluxConfig.Storage.Api.dll"]
